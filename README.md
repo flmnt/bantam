@@ -17,7 +17,9 @@ Features include:
 
 ## Getting started
 
-Our goal with Bantam is reduce the work bootstrapping microservices. Getting started with your first microservice is very simple.
+Our goal with Bantam is reduce the work bootstrapping microservices.
+
+Getting started with your first microservice is very simple.
 
 
 ### Installation
@@ -26,7 +28,7 @@ Our goal with Bantam is reduce the work bootstrapping microservices. Getting sta
 % npm install @_filament/bantam
 ```
 
-Once you have installed Bantam you can initialise your app. This can be done with either a brand new app or an existing Node app.
+Once you have installed Bantam you can initialise your app; this can be done with either a brand new or existing app.
 
 ```
 % npm run bantam init
@@ -46,7 +48,7 @@ Bantam expects the following folder structure:
 |  |  other.ts   // add as many other "domains" as you like (optional)
 ```
 
-In the root level index.ts file add the following to run Bantam:
+In the root level `index.ts` file add the following to run Bantam:
 
 ```
 import Bantam from '@_filament/bantam';
@@ -91,14 +93,14 @@ class Other {
 The setup above will make the following routes available:
 
 ```
-GET      /
-GET      /:id
-POST     /
-PATCH    /:id
-DELETE   /:id
+GET      /            // Index.fetchAll()
+GET      /:id         // Index.fetchSingle()
+POST     /            // Index.create()
+PATCH    /:id         // Index.update()
+DELETE   /:id         // Index.delete()
 
-GET      /other/:id
-POST     /other
+GET      /other/:id   // Other.fetchSingle()
+POST     /other       // Other.create()
 ```
 
 And that's you ready to go!
@@ -117,7 +119,7 @@ Your application will be served on http://localhost:3000
 In development mode, when you make changes to files the application will update itself.
 
 
-### Production
+### Production
 
 To serve your microservice in production use:
 
