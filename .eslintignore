@@ -2,3 +2,5 @@ node_modules
 /lib
 /bin
 /logo
+.eslintrc.js
+jest.config.js

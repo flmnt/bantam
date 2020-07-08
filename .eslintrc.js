@@ -1,9 +1,13 @@
 module.exports = {
-  extends: ["standard-with-typescript", "prettier"],
+  root: true,
+  parser: '@typescript-eslint/parser',
   parserOptions: {
-    project: "./tsconfig.json",
+    project: './tsconfig.eslint.json',
   },
+  plugins: ['@typescript-eslint'],
+  extends: ['standard-with-typescript', 'prettier/@typescript-eslint'],
   rules: {
-    "comma-dangle": ["error", "always-multiline"],
+    'comma-dangle': ['error', 'always-multiline'],
+    semi: ['error', 'always'],
   },
 };
