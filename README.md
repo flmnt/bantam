@@ -1,10 +1,11 @@
 # bantam
 
-<img src="https://raw.githubusercontent.com/FilamentSolutions/bantam/master/logo/logo.png" width="300">
+<img src="https://raw.githubusercontent.com/FilamentSolutions/bantam/master/logo/logo.png" alt="Basil the Bantam" width="300">
 
 Bantam is an extensible, ultra lightweight, NodeJS framework for creating RESTful microservices.
 
 Features include:
+
 - built on top of [Koa](https://github.com/koajs/koa)
 - built with [Typescript](https://github.com/microsoft/TypeScript) (works with vanilla JS)
 - simple REST routing
@@ -14,13 +15,11 @@ Features include:
 - live reloading in developer mode
 - small package size (xx with all dependencies)
 
-
 ## Getting started
 
 Our goal with Bantam is reduce the work bootstrapping microservices.
 
 Getting started with your first microservice is very simple.
-
 
 ### Installation
 
@@ -31,11 +30,10 @@ Getting started with your first microservice is very simple.
 Once you have installed Bantam you can initialise your app; this can be done with either a brand new or existing app.
 
 ```
-% npm run bantam init
+% npx bantam init
 ```
 
 Follow the CLI instructions and then start building your microservice!
-
 
 ### Setup
 
@@ -61,6 +59,7 @@ app.run();
 In the `actions` folder create the following files.
 
 `actions/index.ts`
+
 ```
 class Index {
 
@@ -78,6 +77,7 @@ class Index {
 ```
 
 `actions/other.ts`
+
 ```
 class Other {
 
@@ -105,7 +105,6 @@ POST     /other       // Other.create()
 
 And that's you ready to go!
 
-
 ### Development
 
 If you have followed the standard installation, start the development server with:
@@ -118,7 +117,6 @@ Your application will be served on http://localhost:3000
 
 In development mode, when you make changes to files the application will update itself.
 
-
 ### Production
 
 To serve your microservice in production use:
@@ -130,7 +128,6 @@ To serve your microservice in production use:
 Your application is served at http://your-host:3000
 
 You can change the port number via the configuration options.
-
 
 ## Configuration Options
 
@@ -189,7 +186,6 @@ The file extension for action files.
 
 `Default: "ts"`
 
-
 ## Extending Bantam
 
 Bantam has been built on top of [Koa](https://github.com/koajs/koa), to expose the Koa application and extend Bantam's functionality you can do the following:
@@ -212,16 +208,14 @@ app.extend((koaApp) => {
 app.run();
 ```
 
-
 ## Contribution
 
 We welcome feedback, suggestions and contributions.
 
 If you have an idea you want to discuss please [open an issue](https://github.com/FilamentSolutions/bantam/issues/new).
 
-
 ## Licenses
 
 Free for personal and commerical use under the [MIT License](https://github.com/FilamentSolutions/bantam/blob/master/LICENSE.md)
 
-Basil the Bantam was created with a free vector from [Vectorportal.com](https://vectorportal.com)
+_Basil the Bantam_ was created with a free vector from [Vectorportal.com](https://vectorportal.com)

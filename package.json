@@ -1,0 +1,72 @@
+{
+  "name": "@_filament/bantam",
+  "version": "0.0.1",
+  "description": "A micro framework for micro services",
+  "engines": {
+    "node": ">=12.18.2",
+    "npm": ">=6.14.5"
+  },
+  "main": "lib/index.js",
+  "directories": {
+    "lib": "lib",
+    "bin": "bin",
+    "test": "test",
+    "example": "example"
+  },
+  "files": [
+    "bin",
+    "lib"
+  ],
+  "scripts": {
+    "test": "jest",
+    "lint": "eslint .",
+    "prettier": "prettier --check"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/FilamentSolutions/bantam.git"
+  },
+  "keywords": [
+    "nodejs",
+    "koa",
+    "microservice",
+    "typescript"
+  ],
+  "author": "Matt Davies <matt@filament.so>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/FilamentSolutions/bantam/issues"
+  },
+  "homepage": "https://github.com/FilamentSolutions/bantam#readme",
+  "dependencies": {
+    "koa": "^2.13.0",
+    "koa-router": "^9.1.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^26.0.4",
+    "@typescript-eslint/eslint-plugin": "^3.6.0",
+    "@typescript-eslint/parser": "^3.6.0",
+    "eslint": "^7.4.0",
+    "eslint-config-prettier": "^6.11.0",
+    "eslint-config-standard-with-typescript": "^18.0.2",
+    "eslint-plugin-import": "^2.22.0",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.1",
+    "husky": "^4.2.5",
+    "jest": "^26.1.0",
+    "lint-staged": "^10.2.11",
+    "prettier": "^2.0.5",
+    "ts-jest": "^26.1.1",
+    "typescript": "^3.9.6"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.ts": "eslint --cache --fix",
+    "*.{js,ts,md,json}": "prettier --write"
+  }
+}
