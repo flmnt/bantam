@@ -5,20 +5,20 @@
 Bantam is an extensible, ultra lightweight NodeJS framework for creating RESTful microservices.
 
 Features include:
-- built on top of [KOA](https://github.com/koajs/koa)
-- built with [Typescript](https://github.com/microsoft/TypeScript) (but works with vanilla JS)
+- built on top of [Koa](https://github.com/koajs/koa)
+- built with [Typescript](https://github.com/microsoft/TypeScript) (works with vanilla JS)
 - simple REST routing
 - [segregated business logic](https://en.wikipedia.org/wiki/Separation_of_concerns)
-- [convention over configuration](https://en.wikipedia.org/wiki/Convention_over_configuration) paradigms
+- [convention over configuration](https://en.wikipedia.org/wiki/Convention_over_configuration) paradigm
 - expressive logging (decent error reporting!)
 - live reloading in developer mode
 - small package size (xx with all dependencies)
+
 
 ## Getting started
 
 Our goal with Bantam is reduce the work bootstrapping microservices and getting started is very simple.
 
-Let's imagine we're creating a very simple user service.
 
 ### Installation
 
@@ -33,6 +33,7 @@ Once installed initialise your app. This can be done with a brand new or existin
 ```
 
 Follow the CLI instructions and then starting building your microservice!
+
 
 ### Setup
 
@@ -102,6 +103,7 @@ POST     /other
 
 And that's you ready to go!
 
+
 ### Development
 
 If you have followed the standard installation, start the development server with:
@@ -113,6 +115,7 @@ If you have followed the standard installation, start the development server wit
 Your application will be served on http://localhost:3000
 
 In development mode, when you make changes to files the application will update itself.
+
 
 ### Production
 
@@ -126,6 +129,7 @@ Your application is served at http://your-host:3000
 
 You can change the port number via the configuration options.
 
+
 ## Configuration Options
 
 For advanced configuration pass an options object when instantiating Bantam.
@@ -135,7 +139,6 @@ import Bantam from '@_filament/bantam';
 
 const options = {
   port: 80,
-  livereload: false,
   ...
 };
 
@@ -146,10 +149,69 @@ app.run();
 
 The options object can have the following properties:
 
-port
-devPort
-livereload
-actionsFolder
-indexFile
+**port**: `integer`
+
+Sets the port number when serving the app in production mode.
+
+`Default: 3000`
+
+**devPort**: `integer`
+
+Sets the port number when serving the app in development mode.
+
+`Default: 3000`
+
+**actionsFolder**: `string`
+
+The folder that contains your action files.
+
+`Default: "actions"`
+
+**indexFile**: `string`
+
+The primary action file in your action folder.
+
+`Default: "index.ts"`
+
+**actionFileExt**: `string`
+
+The file extension for action files.
+
+`Default: "ts"`
+
 
 ## Extending Bantam
+
+Bantam has been built on top of [Koa](https://github.com/koajs/koa), to expose the Koa application and extend Bantam's functionality you can do the following:
+
+```
+import Bantam from '@_filament/bantam';
+
+const app = new Bantam();
+
+app.extend((koaApp) => {
+
+  koaApp.use(async (ctx, next) => {
+    // your code here...
+    await next();
+  });
+
+  return koaApp;
+});
+
+app.run();
+```
+
+
+## Contribution
+
+We welcome feedback, suggestions and contributions.
+
+If you have an idea you want to discuss please [open an issue](https://github.com/FilamentSolutions/bantam/issues/new).
+
+
+## Licenses
+
+Free for personal and commerical use under the [MIT License](https://github.com/FilamentSolutions/bantam/blob/master/LICENSE.md)
+
+Basil the Bantam was created with a free vector from [Vectorportal.com](https://vectorportal.com)
