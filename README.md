@@ -2,7 +2,7 @@
 
 <img src="https://raw.githubusercontent.com/FilamentSolutions/bantam/master/logo/logo.png" width="300">
 
-Bantam is an extensible, ultra lightweight NodeJS framework for creating RESTful microservices.
+Bantam is an extensible, ultra lightweight, NodeJS framework for creating RESTful microservices.
 
 Features include:
 - built on top of [Koa](https://github.com/koajs/koa)
@@ -17,7 +17,7 @@ Features include:
 
 ## Getting started
 
-Our goal with Bantam is reduce the work bootstrapping microservices and getting started is very simple.
+Our goal with Bantam is reduce the work bootstrapping microservices. Getting started with your first microservice is very simple.
 
 
 ### Installation
@@ -26,13 +26,13 @@ Our goal with Bantam is reduce the work bootstrapping microservices and getting 
 % npm install @_filament/bantam
 ```
 
-Once installed initialise your app. This can be done with a brand new or existing app.
+Once you have installed Bantam you can initialise your app. This can be done with either a brand new app or an existing Node app.
 
 ```
 % npm run bantam init
 ```
 
-Follow the CLI instructions and then starting building your microservice!
+Follow the CLI instructions and then start building your microservice!
 
 
 ### Setup
@@ -58,7 +58,7 @@ app.run();
 
 In the `actions` folder create the following files.
 
-`actions/index.js`
+`actions/index.ts`
 ```
 class Index {
 
@@ -75,7 +75,7 @@ class Index {
 }
 ```
 
-`actions/other.js`
+`actions/other.ts`
 ```
 class Other {
 
@@ -155,11 +155,15 @@ Sets the port number when serving the app in production mode.
 
 `Default: 3000`
 
+<br>
+
 **devPort**: `integer`
 
 Sets the port number when serving the app in development mode.
 
 `Default: 3000`
+
+<br>
 
 **actionsFolder**: `string`
 
@@ -167,13 +171,17 @@ The folder that contains your action files.
 
 `Default: "actions"`
 
-**indexFile**: `string`
+<br>
+
+**actionsIndexFile**: `string`
 
 The primary action file in your action folder.
 
 `Default: "index.ts"`
 
-**actionFileExt**: `string`
+<br>
+
+**actionsFileExt**: `string`
 
 The file extension for action files.
 
