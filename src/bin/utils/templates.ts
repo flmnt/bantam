@@ -36,15 +36,15 @@ export const calculateRequiredOptions = (
 export const jsActionTemplate = (
   className: string,
 ): string => `class ${className} {
-  fetchAll(request) => {};
+  fetchAll(request) {}
 
-  fetchSingle(id, request) => {};
+  fetchSingle(id, request) {}
 
-  create(data, request) => {};
+  create(data, request) {}
 
-  update(id, data, request) => {};
+  update(id, data, request) {}
 
-  delete(id, request) => {};
+  delete(id, request) {}
 }
 
 export default ${className};
@@ -55,15 +55,15 @@ export const tsActionTemplate = (
 ): string => `import { Request } from 'koa';
 
 class ${className} {
-  fetchAll(request: Request): void => {};
+  fetchAll(request: Request): void {}
 
-  fetchSingle(id: string, request: Request): void => {};
+  fetchSingle(id: string, request: Request): void {}
 
-  create(data: any, request: Request): void => {};
+  create(data: any, request: Request): void {}
 
-  update(id: string, data: any, request: Request): void => {};
+  update(id: string, data: any, request: Request): void {}
 
-  delete(id: string, request: Request): void => {};
+  delete(id: string, request: Request): void {}
 }
 
 export default ${className};

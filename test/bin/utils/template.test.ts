@@ -20,15 +20,15 @@ test('JS action template returns correct template', () => {
   const className = 'Test';
   const template = jsActionTemplate(className);
   expect(template).toBe(`class ${className} {
-  fetchAll(request) => {};
+  fetchAll(request) {}
 
-  fetchSingle(id, request) => {};
+  fetchSingle(id, request) {}
 
-  create(data, request) => {};
+  create(data, request) {}
 
-  update(id, data, request) => {};
+  update(id, data, request) {}
 
-  delete(id, request) => {};
+  delete(id, request) {}
 }
 
 export default ${className};
@@ -41,15 +41,15 @@ test('TS action template returns correct template', () => {
   expect(template).toBe(`import { Request } from 'koa';
 
 class ${className} {
-  fetchAll(request: Request): void => {};
+  fetchAll(request: Request): void {}
 
-  fetchSingle(id: string, request: Request): void => {};
+  fetchSingle(id: string, request: Request): void {}
 
-  create(data: any, request: Request): void => {};
+  create(data: any, request: Request): void {}
 
-  update(id: string, data: any, request: Request): void => {};
+  update(id: string, data: any, request: Request): void {}
 
-  delete(id: string, request: Request): void => {};
+  delete(id: string, request: Request): void {}
 }
 
 export default ${className};
