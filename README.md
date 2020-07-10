@@ -178,7 +178,7 @@ The folder that contains your action files.
 
 The primary action file in your action folder.
 
-`Default: "index.ts"`
+`Default: "index"`
 
 <br>
 
