@@ -99,3 +99,76 @@ test('Logs and throws error if action file cannot be read', async () => {
     'Unable to read `index.ts`! Check permissions.',
   );
 });
+
+test('Can get routes', () => {
+  const app = new Bantam();
+  const mockRoutes = [
+    {
+      name: 'index',
+      methods: [{ name: 'fetchAll', verb: 'GET', url: '/' }],
+    },
+  ];
+  // @ts-expect-error
+  app.routes = mockRoutes;
+  expect(app.getRoutes()).toStrictEqual(mockRoutes);
+});
+
+test('Logs error if no routes have been set', () => {
+  const mockLoggerError = jest.fn();
+  const fakeLogger = { error: mockLoggerError };
+  // @ts-expect-error
+  const app = new Bantam(undefined, { logger: fakeLogger });
+  app.getRoutes();
+  expect(mockLoggerError).toHaveBeenCalledWith(
+    'You have no routes. Check for files in the actions folder and then restart the app.',
+  );
+});
+
+test('Can set routes', async () => {
+  const app = new Bantam();
+  const readFolderStub = sinon.stub(app, 'readActionsFolder');
+  readFolderStub.returns(['index.ts', 'other.ts']);
+  const readFileStub = sinon.stub(app, 'readActionFile');
+  readFileStub.onFirstCall().returns(`class Index {
+  fetchAll(request) {}
+
+  fetchSingle(id, request) {}
+
+  create(data, request) {}
+
+  update(id, data, request) {}
+
+  delete(id, request) {}
+}
+
+export default Index;
+`);
+  readFileStub.onSecondCall().returns(`class Other {
+  fetchAll(request) {}
+
+  fetchSingle(id, request) {}
+}
+
+export default Other;
+`);
+  await app.fetchRoutes();
+  expect(app.getRoutes()).toStrictEqual([
+    {
+      name: 'index',
+      methods: [
+        { name: 'fetchAll', verb: 'GET', url: '/' },
+        { name: 'fetchSingle', verb: 'GET', url: '/:id' },
+        { name: 'create', verb: 'POST', url: '/' },
+        { name: 'update', verb: 'PATCH', url: '/:id' },
+        { name: 'delete', verb: 'DELETE', url: '/:id' },
+      ],
+    },
+    {
+      name: 'other',
+      methods: [
+        { name: 'fetchAll', verb: 'GET', url: '/other/' },
+        { name: 'fetchSingle', verb: 'GET', url: '/other/:id' },
+      ],
+    },
+  ]);
+});
