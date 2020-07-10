@@ -1,6 +1,7 @@
 import sinon from 'sinon';
 
 import Logger, {
+  BANTAM,
   infoMsg,
   successMsg,
   errorMsg,
@@ -18,7 +19,7 @@ test('Logger can write to stdout', () => {
   const logger = new Logger(writeStream);
   // @ts-expect-error
   logger.write(message);
-  expect(mockWrite).toHaveBeenCalledWith(`\n${message}\n`);
+  expect(mockWrite).toHaveBeenCalledWith(`\n${BANTAM}${message}\n\n`);
 });
 
 test('Logger can write info message', () => {
