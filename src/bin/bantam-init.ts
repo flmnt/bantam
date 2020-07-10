@@ -186,7 +186,7 @@ export const runInit = (): void => {
     () => {
       writeMsg(successMsg('Your application is ready!'), NEW_LINE.BOTH);
       writeMsg(
-        `Run ${String(infoMsg('bantam serve --dev'))} to begin...\n`,
+        `Run ${String(infoMsg('npx bantam serve --dev'))} to begin...\n`,
         NEW_LINE.BOTH,
       );
     },
