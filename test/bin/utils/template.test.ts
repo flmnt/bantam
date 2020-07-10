@@ -56,9 +56,9 @@ export default ${className};
 `);
 });
 
-test('Caculate req options returns null if not required ', () => {
+test('Caculate req options returns empty string if not required ', () => {
   const options = calculateRequiredOptions('actions', 'actions', true);
-  expect(options).toBeNull();
+  expect(options).toBe('');
 });
 
 test('Caculate req options returns actions folder opt if needed ', () => {
