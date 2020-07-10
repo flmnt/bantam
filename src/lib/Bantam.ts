@@ -44,8 +44,10 @@ const METHOD_VERB = {
   delete: 'DELETE',
 };
 
-const url = (strings: TemplateStringsArray, prefix: string | null): string =>
-  prefix ? `${strings[0]}${prefix}${strings[1]}` : `${prefix}${strings[1]}`;
+const url = (strings: TemplateStringsArray, prefix: string): string =>
+  prefix === ''
+    ? `${prefix}${strings[1]}`
+    : `${strings[0]}${prefix}${strings[1]}`;
 
 const individualResourceUrl = (
   strings: TemplateStringsArray,
@@ -146,7 +148,7 @@ class Bantam {
         const file = await this.readActionFile(fileName);
         const methods = file.match(METHOD_RE);
         for (const method of methods) {
-          const prefix = actionsIndexFile !== route.name ? route.name : null;
+          const prefix = actionsIndexFile !== route.name ? route.name : '';
           route.methods.push({
             name: method,
             verb: METHOD_VERB[method],

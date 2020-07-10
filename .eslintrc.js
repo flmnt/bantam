@@ -10,6 +10,5 @@ module.exports = {
     'comma-dangle': ['error', 'always-multiline'],
     semi: ['error', 'always'],
     '@typescript-eslint/return-await': ['error', 'in-try-catch'],
-    '@typescript-eslint/strict-boolean-expressions': ['off'],
   },
 };
