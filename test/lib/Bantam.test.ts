@@ -1,4 +1,11 @@
+import fs from 'fs';
+import sinon from 'sinon';
+
 import Bantam from '../../src/lib/Bantam';
+
+afterEach(() => {
+  sinon.restore();
+});
 
 test('Can instantiate with default options', (): void => {
   const app = new Bantam();
@@ -40,4 +47,27 @@ test('Can instantiate with all user options', (): void => {
     actionsIndexFile: 'other',
     actionsFileExt: '.jsx',
   });
+});
+
+test('Can read actions file in actions folder', async () => {
+  const files = ['index.ts', 'other.ts', 'test.ts'];
+  const app = new Bantam();
+  const readdirStub = sinon.stub(fs, 'readdir');
+  readdirStub.yields(null, files);
+  const actions = await app.readActionsFolder();
+  expect(actions).toBe(files);
+});
+
+test('Logs error if actions folder cannot be read', async () => {
+  const mockLoggerError = jest.fn();
+  const fakeLogger = { error: mockLoggerError };
+  // @ts-expect-error
+  const app = new Bantam(undefined, { logger: fakeLogger });
+  const readdirStub = sinon.stub(fs, 'readdir');
+  readdirStub.yields(new Error());
+  const actions = await app.readActionsFolder();
+  expect(actions).toStrictEqual([]);
+  expect(mockLoggerError).toHaveBeenCalledWith(
+    'Unable to read actions folder! Check `actionsFolder` config setting.',
+  );
 });
