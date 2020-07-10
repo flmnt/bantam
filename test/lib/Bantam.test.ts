@@ -49,7 +49,7 @@ test('Can instantiate with all user options', (): void => {
   });
 });
 
-test('Can read actions file in actions folder', async () => {
+test('Can read file names in actions folder', async () => {
   const files = ['index.ts', 'other.ts', 'test.ts'];
   const app = new Bantam();
   const readdirStub = sinon.stub(fs, 'readdir');
@@ -69,5 +69,33 @@ test('Logs error if actions folder cannot be read', async () => {
   expect(actions).toStrictEqual([]);
   expect(mockLoggerError).toHaveBeenCalledWith(
     'Unable to read actions folder! Check `actionsFolder` config setting.',
+  );
+});
+
+test('Can read action file content', async () => {
+  const file = 'Test File Content';
+  const app = new Bantam();
+  const readFileStub = sinon.stub(fs, 'readFile');
+  readFileStub.yields(null, file);
+  const contents = await app.readActionFile('index.ts');
+  expect(contents).toBe(file);
+  expect(readFileStub.calledOnceWith('actions/index.ts'));
+});
+
+test('Logs and throws error if action file cannot be read', async () => {
+  expect.assertions(2);
+  const mockLoggerError = jest.fn();
+  const fakeLogger = { error: mockLoggerError };
+  // @ts-expect-error
+  const app = new Bantam(undefined, { logger: fakeLogger });
+  const readFileStub = sinon.stub(fs, 'readFile');
+  readFileStub.yields(new Error());
+  try {
+    await app.readActionFile('index.ts');
+  } catch (error) {
+    expect(error.message).toBe('Not able to read file!');
+  }
+  expect(mockLoggerError).toHaveBeenCalledWith(
+    'Unable to read `index.ts`! Check permissions.',
   );
 });

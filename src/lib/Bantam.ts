@@ -1,4 +1,5 @@
 import fs from 'fs';
+import path from 'path';
 
 import Logger from './services/Logger';
 
@@ -77,11 +78,23 @@ class Bantam {
     });
   }
 
-  readActionFile(): void {
-    // read file and return string
+  async readActionFile(fileName: string): Promise<string> {
+    const { actionsFolder } = this.getConfig();
+    const filePath = path.join(actionsFolder, fileName);
+    return new Promise((resolve, reject) => {
+      fs.readFile(filePath, 'utf-8', (error, file) => {
+        if (error instanceof Error) {
+          this.logger.error(
+            `Unable to read \`${fileName}\`! Check permissions.`,
+          );
+          return reject(new Error('Not able to read file!'));
+        }
+        resolve(file);
+      });
+    });
   }
 
-  parseRoutes(): void {}
+  async parseRoutes(): Promise<void> {}
 }
 
 export default Bantam;
