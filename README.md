@@ -107,10 +107,10 @@ And that's you ready to go!
 
 ### Development
 
-If you have followed the standard installation, start the development server with:
+Start the development server with:
 
 ```
-% npm start
+% npx bantam serve --dev
 ```
 
 Your application will be served on http://localhost:3000
@@ -122,7 +122,7 @@ In development mode, when you make changes to files the application will update 
 To serve your microservice in production use:
 
 ```
-% npm serve
+% npx bantam serve
 ```
 
 Your application is served at http://your-host:3000

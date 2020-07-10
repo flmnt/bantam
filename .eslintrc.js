@@ -9,5 +9,6 @@ module.exports = {
   rules: {
     'comma-dangle': ['error', 'always-multiline'],
     semi: ['error', 'always'],
+    '@typescript-eslint/return-await': ['error', 'in-try-catch'],
   },
 };
