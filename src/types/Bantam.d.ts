@@ -1,4 +1,6 @@
+export type BantamSupportedLanguage = 'typescript' | 'javascript';
+
 export interface BantamCliOptions {
   actionsFolder: string;
-  language: string;
+  language: BantamSupportedLanguage;
 }

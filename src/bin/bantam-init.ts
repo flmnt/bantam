@@ -32,6 +32,7 @@ import {
   tsActionTemplate,
   jsActionTemplate,
 } from './utils/templates';
+import { BantamSupportedLanguage } from '../types/Bantam';
 
 //
 // INIT
@@ -39,15 +40,15 @@ import {
 // Configure a Bantam application via CLI
 //
 
-type Language = 'typescript' | 'javascript';
-
 const init = async (): Promise<void> => {
   clear();
 
   writeMsg(welcomeMsg());
 
-  const choices: Language[] = ['typescript', 'javascript'];
-  const { language }: { language: Language } = await inquirer.prompt([
+  const choices: BantamSupportedLanguage[] = ['typescript', 'javascript'];
+  const {
+    language,
+  }: { language: BantamSupportedLanguage } = await inquirer.prompt([
     {
       type: 'list',
       name: 'language',

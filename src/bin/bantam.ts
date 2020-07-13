@@ -3,11 +3,13 @@
 import yargs from 'yargs';
 
 import { runInit } from './bantam-init';
+import { runAction } from './bantam-action';
 
-const runServe = (isDev: boolean): void =>
-  console.log(`serve${isDev ? ' dev' : ''}`);
+interface ActionArgs {
+  file: string;
+}
 
-interface Args {
+interface ServeArgs {
   dev: boolean;
 }
 
@@ -20,11 +22,21 @@ const cli = yargs
     (argv) => runInit(),
   )
   .command(
-    'serve',
-    'Serve your application',
-    (yargs) => {},
-    ({ dev }: Args) => runServe(dev),
+    'action [file]',
+    'Create a new action route',
+    (yargs) => {
+      yargs.positional('file', {
+        describe: 'action file name',
+      });
+    },
+    ({ file }: ActionArgs) => runAction(file),
   )
+  // .command(
+  //   'serve',
+  //   'Serve your application',
+  //   (yargs) => {},
+  //   ({ dev }: ServeArgs) => runServe(dev),
+  // )
   .option('dev', {
     alias: 'd',
     type: 'boolean',
