@@ -5,7 +5,12 @@ import inquirer from 'inquirer';
 import path from 'path';
 
 import { FileExistsError, CancelError } from './utils/errors';
-import { createFile, createFolder, makeClassName } from './utils/filesystem';
+import {
+  createFile,
+  createFolder,
+  makeClassName,
+  createBantamRCFile,
+} from './utils/filesystem';
 import {
   infoMsg,
   successMsg,
@@ -34,23 +39,25 @@ import {
 // Configure a Bantam application via CLI
 //
 
+type Language = 'typescript' | 'javascript';
+
 const init = async (): Promise<void> => {
   clear();
 
   writeMsg(welcomeMsg());
 
-  const choices = ['Typescript', 'Javascript'];
-  const { lang } = await inquirer.prompt([
+  const choices: Language[] = ['typescript', 'javascript'];
+  const { language }: { language: Language } = await inquirer.prompt([
     {
       type: 'list',
-      name: 'lang',
+      name: 'language',
       message: languageCheckMsg(),
       choices,
       default: choices[0],
     },
   ]);
 
-  const isTs = lang === 'Typescript';
+  const isTs = language === 'typescript';
   const indexFileDefault = `index.${isTs ? 'ts' : 'js'}`;
   const actionsFolderDefault = 'actions';
 
@@ -177,6 +184,17 @@ ${actionFilesFlat}`;
       } else {
         throw error;
       }
+    }
+  }
+
+  try {
+    writeMsg(infoMsg(`Creating .bantamrc.js file...`));
+    await createBantamRCFile({ actionsFolder, language });
+  } catch (error) {
+    if (error instanceof FileExistsError) {
+      writeMsg(errorMsg(' file exists, skipping'), NEW_LINE.AFTER);
+    } else {
+      throw error;
     }
   }
 };

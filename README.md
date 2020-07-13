@@ -131,6 +131,25 @@ Your application is served at http://your-host:3000
 
 You can change the port number via the configuration options.
 
+## .bantamrc.js
+
+After running `npx bantam init` you will have a `.bantamrc.js` file in your directory with some CLI config options like this:
+
+```
+module.exports = {
+  actionsFolder: 'actions',
+  language: 'typescript',
+};
+```
+
+## Add New Routes
+
+To add a new route (action) you can either create a new file in the actions folder or run this:
+
+```
+% npx bantam action index.ts
+```
+
 ## Configuration Options
 
 For advanced configuration pass an options object when instantiating Bantam.
