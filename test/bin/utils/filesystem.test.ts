@@ -5,6 +5,7 @@ import {
   makeClassName,
   createFile,
   createFolder,
+  createBantamRCFile,
 } from '../../../src/bin/utils/filesystem';
 
 afterEach(() => {
@@ -55,4 +56,19 @@ test('Create folder method throws if folder exists', async () => {
   return createFolder(path).catch((error) => {
     expect(error).toBe(fakeError);
   });
+});
+
+test('Create config method writes options to file', async () => {
+  const writeFileStub = sinon.stub(fs, 'writeFile');
+  writeFileStub.callsArg(3);
+  await createBantamRCFile({ actionsFolder: 'example', language: 'go' });
+  expect(
+    writeFileStub.calledOnceWith(
+      `${process.cwd()}/.bantamrc.js`,
+      `module.exports = {
+  actionsFolder: 'example',
+  language: 'go',
+};`,
+    ),
+  ).toBeTruthy();
 });
