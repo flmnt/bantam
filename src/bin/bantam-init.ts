@@ -61,7 +61,11 @@ const init = async (): Promise<void> => {
   const indexFileDefault = `index.${isTs ? 'ts' : 'js'}`;
   const actionsFolderDefault = 'actions';
 
-  const answers = await inquirer.prompt([
+  const answers: {
+    indexFile: string;
+    actionsFolder: string;
+    createActionsFile: boolean;
+  } = await inquirer.prompt([
     {
       type: 'input',
       name: 'indexFile',
@@ -82,12 +86,18 @@ const init = async (): Promise<void> => {
     },
   ]);
 
-  let doCreateActionFiles: boolean = answers.createActionsFile;
+  let doCreateActionFiles = answers.createActionsFile;
 
-  const actionFiles = [];
+  const actionFiles: string[] = [];
 
   while (doCreateActionFiles) {
-    const { actionsFile, createActionsFile } = await inquirer.prompt([
+    const {
+      actionsFile,
+      createActionsFile,
+    }: {
+      actionsFile: string;
+      createActionsFile: boolean;
+    } = await inquirer.prompt([
       {
         type: 'input',
         name: 'actionsFile',
@@ -110,15 +120,15 @@ const init = async (): Promise<void> => {
   }
 
   const actionFilesFlat: string = actionFiles
-    .map((fileName) => `|  |  ${String(fileName)}`)
+    .map((fileName) => `|  |  ${fileName}`)
     .join('\n');
 
   const structure: string = `
-| ${String(answers.indexFile)}
-| ${String(answers.actionsFolder)}
+| ${answers.indexFile}
+| ${answers.actionsFolder}
 ${actionFilesFlat}`;
 
-  const { confirm } = await inquirer.prompt([
+  const { confirm }: { confirm: boolean } = await inquirer.prompt([
     {
       type: 'confirm',
       name: 'confirm',
@@ -127,7 +137,7 @@ ${actionFilesFlat}`;
     },
   ]);
 
-  if (confirm === false) {
+  if (!confirm) {
     return Promise.reject(new CancelError('Cancelled!'));
   }
 
@@ -142,7 +152,7 @@ ${actionFilesFlat}`;
   );
 
   try {
-    writeMsg(infoMsg(`Creating ${String(indexFile)} file...`));
+    writeMsg(infoMsg(`Creating ${indexFile} file...`));
     await createFile(indexFile, indexTemplate(options));
     writeMsg(successMsg(' done!'), NEW_LINE.AFTER);
   } catch (error) {
@@ -154,7 +164,7 @@ ${actionFilesFlat}`;
   }
 
   try {
-    writeMsg(infoMsg(`Creating ${String(actionsFolder)} folder...`));
+    writeMsg(infoMsg(`Creating ${actionsFolder} folder...`));
     await createFolder(actionsFolder);
     writeMsg(successMsg(' done!'), NEW_LINE.AFTER);
   } catch (error) {
@@ -167,11 +177,7 @@ ${actionFilesFlat}`;
 
   for (const actionFile of actionFiles) {
     try {
-      writeMsg(
-        infoMsg(
-          `Creating ${String(actionsFolder)}/${String(actionFile)} file...`,
-        ),
-      );
+      writeMsg(infoMsg(`Creating ${actionsFolder}/${actionFile} file...`));
       const actionTemplate = isTs ? tsActionTemplate : jsActionTemplate;
       await createFile(
         path.join(actionsFolder, actionFile),
@@ -190,6 +196,7 @@ ${actionFilesFlat}`;
   try {
     writeMsg(infoMsg(`Creating .bantamrc.js file...`));
     await createBantamRCFile({ actionsFolder, language });
+    writeMsg(successMsg(' done!'), NEW_LINE.AFTER);
   } catch (error) {
     if (error instanceof FileExistsError) {
       writeMsg(errorMsg(' file exists, skipping'), NEW_LINE.AFTER);
@@ -204,7 +211,7 @@ export const runInit = (): void => {
     () => {
       writeMsg(successMsg('Your application is ready!'), NEW_LINE.BOTH);
       writeMsg(
-        `Run ${String(infoMsg('npx bantam serve --dev'))} to begin...\n`,
+        `Run ${infoMsg('npx bantam serve --dev')} to begin...\n`,
         NEW_LINE.BOTH,
       );
     },
