@@ -48,6 +48,7 @@
     "clear": "^0.1.0",
     "inquirer": "^7.3.0",
     "koa": "^2.13.0",
+    "koa-bodyparser": "^4.3.0",
     "koa-router": "^9.1.0"
   },
   "peerDependencies": {

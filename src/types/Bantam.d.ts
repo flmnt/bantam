@@ -1,6 +1,17 @@
-export type BantamSupportedLanguage = 'typescript' | 'javascript';
+import { Context } from 'koa';
 
-export interface BantamCliOptions {
+export type SupportedLanguage = 'typescript' | 'javascript';
+
+export interface CliOptions {
   actionsFolder: string;
-  language: BantamSupportedLanguage;
+  language: SupportedLanguage;
+}
+
+export interface Action {
+  fetchAll?: (ctx: Context) => void;
+  fetchSingle?: (id: string, ctx: Context) => void;
+  create?: (data: any, ctx: Context) => void;
+  update?: (id: string, data: any, ctx: Context) => void;
+  delete?: (id: string, ctx: Context) => void;
+  [method: string]: any;
 }

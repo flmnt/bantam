@@ -36,15 +36,25 @@ export const calculateRequiredOptions = (
 export const jsActionTemplate = (
   className: string,
 ): string => `class ${className} {
-  fetchAll(request) {}
+  fetchAll(ctx) {
+    // ctx.body = 'YOUR RESPONSE';
+  }
 
-  fetchSingle(id, request) {}
+  fetchSingle(id, ctx) {
+    // ctx.body = 'YOUR RESPONSE';
+  }
 
-  create(data, request) {}
+  create(data, ctx) {
+    // ctx.body = 'YOUR RESPONSE';
+  }
 
-  update(id, data, request) {}
+  update(id, data, ctx) {
+    // ctx.body = 'YOUR RESPONSE';
+  }
 
-  delete(id, request) {}
+  delete(id, ctx) {
+    // ctx.body = 'YOUR RESPONSE';
+  }
 }
 
 export default ${className};
@@ -52,18 +62,29 @@ export default ${className};
 
 export const tsActionTemplate = (
   className: string,
-): string => `import { Request } from 'koa';
+): string => `import { Context } from 'koa';
+import { Action } from '@_filament/bantam';
 
-class ${className} {
-  fetchAll(request: Request): void {}
+class ${className} implements Action {
+  fetchAll(ctx: Context): void {
+    // ctx.body = 'YOUR RESPONSE';
+  }
 
-  fetchSingle(id: string, request: Request): void {}
+  fetchSingle(id: string, ctx: Context): void {
+    // ctx.body = 'YOUR RESPONSE';
+  }
 
-  create(data: any, request: Request): void {}
+  create(data: any, ctx: Context): void {
+    // ctx.body = 'YOUR RESPONSE';
+  }
 
-  update(id: string, data: any, request: Request): void {}
+  update(id: string, data: any, ctx: Context): void {
+    // ctx.body = 'YOUR RESPONSE';
+  }
 
-  delete(id: string, request: Request): void {}
+  delete(id: string, ctx: Context): void {
+    // ctx.body = 'YOUR RESPONSE';
+  }
 }
 
 export default ${className};

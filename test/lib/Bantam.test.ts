@@ -1,7 +1,9 @@
 import fs from 'fs';
 import sinon from 'sinon';
+import { Context } from 'koa';
 
 import Bantam from '../../src/lib/Bantam';
+import { Action } from '../../src/types/Bantam';
 
 afterEach(() => {
   sinon.restore();
@@ -72,34 +74,6 @@ test('Logs error if actions folder cannot be read', async () => {
   );
 });
 
-test('Can read action file content', async () => {
-  const file = 'Test File Content';
-  const app = new Bantam();
-  const readFileStub = sinon.stub(fs, 'readFile');
-  readFileStub.yields(null, file);
-  const contents = await app.readActionFile('index.ts');
-  expect(contents).toBe(file);
-  expect(readFileStub.calledOnceWith('actions/index.ts'));
-});
-
-test('Logs and throws error if action file cannot be read', async () => {
-  expect.assertions(2);
-  const mockLoggerError = jest.fn();
-  const fakeLogger = { error: mockLoggerError };
-  // @ts-expect-error
-  const app = new Bantam(undefined, { logger: fakeLogger });
-  const readFileStub = sinon.stub(fs, 'readFile');
-  readFileStub.yields(new Error());
-  try {
-    await app.readActionFile('index.ts');
-  } catch (error) {
-    expect(error.message).toBe('Not able to read file!');
-  }
-  expect(mockLoggerError).toHaveBeenCalledWith(
-    'Unable to read `index.ts`! Check permissions.',
-  );
-});
-
 test('Can get routes', () => {
   const app = new Bantam();
   const mockRoutes = [
@@ -124,51 +98,103 @@ test('Logs error if no routes have been set', () => {
   );
 });
 
-test('Can set routes', async () => {
+class MockAction implements Action {
+  fetchAll(ctx: Context): void {}
+  fetchSingle(id: string, ctx: Context): void {}
+  create(data: any, ctx: Context): void {}
+  update(id: string, data: any, ctx: Context): void {}
+  delete(id: string): void {}
+  getCustom(ctx: Context): void {}
+  setCustom(data: any, ctx: Context): void {}
+  private _privateMethod(): void {}
+}
+
+test('Find action methods through introspection', () => {
   const app = new Bantam();
-  const readFolderStub = sinon.stub(app, 'readActionsFolder');
-  readFolderStub.returns(['index.ts', 'other.ts']);
-  const readFileStub = sinon.stub(app, 'readActionFile');
-  readFileStub.onFirstCall().returns(`class Index {
-  fetchAll(request) {}
+  const Action = MockAction;
+  const methods = app.introspectActionMethods(Action);
+  expect(methods).toStrictEqual({
+    get: ['fetchAll', 'fetchSingle', 'getCustom'],
+    post: ['create', 'setCustom'],
+    patch: ['update'],
+    delete: ['delete'],
+  });
+});
 
-  fetchSingle(id, request) {}
+// @TODO: test route setting methods
 
-  create(data, request) {}
+// test('Can set routes', async () => {
+//   const app = new Bantam();
+//   const readFolderStub = sinon.stub(app, 'readActionsFolder');
+//   readFolderStub.returns(['index.ts', 'other.ts']);
+//   const readFileStub = sinon.stub(app, 'readActionFile');
+//   await app.fetchRoutes();
+//   expect(app.getRoutes()).toStrictEqual([
+//     {
+//       name: 'index',
+//       methods: [
+//         { name: 'fetchAll', verb: 'GET', url: '/' },
+//         { name: 'fetchSingle', verb: 'GET', url: '/:id' },
+//         { name: 'create', verb: 'POST', url: '/' },
+//         { name: 'update', verb: 'PATCH', url: '/:id' },
+//         { name: 'delete', verb: 'DELETE', url: '/:id' },
+//       ],
+//     },
+//     {
+//       name: 'other',
+//       methods: [
+//         { name: 'fetchAll', verb: 'GET', url: '/other/' },
+//         { name: 'fetchSingle', verb: 'GET', url: '/other/:id' },
+//       ],
+//     },
+//   ]);
+// });
 
-  update(id, data, request) {}
+test('User can extend koa app with a callback', () => {
+  const app = new Bantam();
+  // @ts-expect-error
+  app.app = 'koa';
+  app.extend((koa) => {
+    koa = 'foo';
+    return koa;
+  });
+  // @ts-expect-error
+  expect(app.app).toBe('foo');
+});
 
-  delete(id, request) {}
-}
+test('Starts koa app when run is called', () => {
+  const listenStub = jest.fn();
+  const fakeApp = { listen: listenStub };
+  const app = new Bantam();
+  // @ts-expect-error
+  app.app = fakeApp;
+  app.run();
+  expect(listenStub).toHaveBeenCalled();
+});
 
-export default Index;
-`);
-  readFileStub.onSecondCall().returns(`class Other {
-  fetchAll(request) {}
+test('Logs error if app is not ready when run is called', () => {
+  const mockLoggerError = jest.fn();
+  const fakeLogger = { error: mockLoggerError };
+  // @ts-expect-error
+  const app = new Bantam(undefined, { logger: fakeLogger });
+  app.run();
+  expect(mockLoggerError).toHaveBeenCalledWith(
+    'Koa application has not been initialised.',
+  );
+});
 
-  fetchSingle(id, request) {}
-}
-
-export default Other;
-`);
-  await app.fetchRoutes();
-  expect(app.getRoutes()).toStrictEqual([
-    {
-      name: 'index',
-      methods: [
-        { name: 'fetchAll', verb: 'GET', url: '/' },
-        { name: 'fetchSingle', verb: 'GET', url: '/:id' },
-        { name: 'create', verb: 'POST', url: '/' },
-        { name: 'update', verb: 'PATCH', url: '/:id' },
-        { name: 'delete', verb: 'DELETE', url: '/:id' },
-      ],
-    },
-    {
-      name: 'other',
-      methods: [
-        { name: 'fetchAll', verb: 'GET', url: '/other/' },
-        { name: 'fetchSingle', verb: 'GET', url: '/other/:id' },
-      ],
-    },
-  ]);
+test('Logs error on run if koa app startup throws', () => {
+  const mockLoggerError = jest.fn();
+  const fakeLogger = { error: mockLoggerError };
+  const listenStub = sinon.stub();
+  listenStub.throws('I am ERROR');
+  const fakeApp = { listen: listenStub };
+  // @ts-expect-error
+  const app = new Bantam(undefined, { logger: fakeLogger });
+  // @ts-expect-error
+  app.app = fakeApp;
+  app.run();
+  expect(mockLoggerError).toHaveBeenCalledWith(
+    'Unable to start Bantam application!',
+  );
 });

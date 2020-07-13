@@ -61,13 +61,16 @@ test('Create folder method throws if folder exists', async () => {
 test('Create config method writes options to file', async () => {
   const writeFileStub = sinon.stub(fs, 'writeFile');
   writeFileStub.callsArg(3);
-  await createBantamRCFile({ actionsFolder: 'example', language: 'go' });
+  await createBantamRCFile({
+    actionsFolder: 'example',
+    language: 'javascript',
+  });
   expect(
     writeFileStub.calledOnceWith(
       `${process.cwd()}/.bantamrc.js`,
       `module.exports = {
   actionsFolder: 'example',
-  language: 'go',
+  language: 'javascript',
 };`,
     ),
   ).toBeTruthy();

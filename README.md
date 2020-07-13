@@ -69,9 +69,9 @@ class Index {
 
   fetchSingle: (id) => { ... },
 
-  create: (data, request) => { ... },
+  create: (data, ctx) => { ... },
 
-  update: (id, data, request) => { ... },
+  update: (id, data, ctx) => { ... },
 
   delete: (id) => { ... },
 
@@ -85,7 +85,7 @@ class Other {
 
   fetchSingle: (id) => { ... },
 
-  create: (data, request) => { ... },
+  create: (data, ctx) => { ... },
 
   // NB: add as few methods as you need...
 

@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 
 import { FileExistsError } from './errors';
-import { BantamCliOptions } from '../../types/Bantam';
+import { CliOptions } from '../../types/Bantam';
 
 export const createFile = async (
   filePath: string,
@@ -43,9 +43,7 @@ export const makeClassName = (s: string): string =>
     ) // capitalise
     .replace(/\W/g, ''); // remove symbols and spaces
 
-export const createBantamRCFile = async (
-  options: BantamCliOptions,
-): Promise<void> =>
+export const createBantamRCFile = async (options: CliOptions): Promise<void> =>
   createFile(
     './.bantamrc.js',
     `module.exports = {

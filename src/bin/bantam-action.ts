@@ -14,7 +14,7 @@ import {
   writeError,
 } from './utils/messages';
 import { tsActionTemplate, jsActionTemplate } from './utils/templates';
-import { BantamCliOptions } from '../types/Bantam';
+import { CliOptions } from '../types/Bantam';
 
 //
 // ACTION
@@ -27,7 +27,7 @@ const action = async (actionFile: string): Promise<string> => {
 
   // eslint-disable-next-line
   const bantamOptions = require(path.resolve(process.cwd(), './.bantamrc.js'));
-  const options: BantamCliOptions = bantamOptions;
+  const options: CliOptions = bantamOptions;
 
   const isTs = options.language === 'typescript';
   const actionsFolder = options.actionsFolder;
