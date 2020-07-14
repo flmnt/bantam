@@ -1,12 +1,12 @@
 import fs from 'fs';
 import path from 'path';
 
-import Koa from 'koa';
+import Koa, { Context } from 'koa';
 import KoaRouter from 'koa-router';
 import koaBodyParser from 'koa-bodyparser';
 
 import Logger from './services/Logger';
-import { Action } from '../types/Bantam';
+import { Action as BantamAction } from '../types/Bantam';
 
 interface UserOptions {
   port?: number;
@@ -30,62 +30,25 @@ interface Dependencies {
 
 type HttpVerb = 'get' | 'post' | 'patch' | 'delete';
 
-interface Method {
+interface Route {
   method: string;
   verb: HttpVerb;
   url: string;
 }
 
-export interface Route {
+export interface Action {
   fileName: string;
   pathName: string;
-  action?: Action;
+  actionClass?: BantamAction;
+  routes?: Route[];
 }
 
-interface MethodsMap {
+interface MethodsDict {
   get: string[];
   post: string[];
   patch: string[];
   delete: string[];
 }
-
-const GET_METHOD_RE = /^(get\w*|fetchAll|fetchSingle)$/;
-
-const POST_METHOD_RE = /^(set\w*|create)$/;
-
-const PATCH_METHOD_RE = /^update$/;
-
-const DELETE_METHOD_RE = /^delete$/;
-
-// const METHOD_VERB: { [fnName: string]: HttpVerb } = {
-//   fetchAll: 'get',
-//   fetchSingle: 'get',
-//   create: 'post',
-//   update: 'patch',
-//   delete: 'delete',
-// };
-
-// const url = (strings: TemplateStringsArray, prefix: string): string =>
-//   prefix === ''
-//     ? `${prefix}${strings[1]}`
-//     : `${strings[0]}${prefix}${strings[1]}`;
-
-// const individualResourceUrl = (
-//   strings: TemplateStringsArray,
-//   prefix: string,
-// ): string => url`/${prefix}/:id`;
-// const collectiveResourceUrl = (
-//   strings: TemplateStringsArray,
-//   prefix: string,
-// ): string => url`/${prefix}/`;
-
-// const METHOD_URL = {
-//   fetchAll: collectiveResourceUrl,
-//   fetchSingle: individualResourceUrl,
-//   create: collectiveResourceUrl,
-//   update: individualResourceUrl,
-//   delete: individualResourceUrl,
-// };
 
 class Bantam {
   readonly defaultConfig: Config = {
@@ -102,7 +65,7 @@ class Bantam {
 
   private config: Config;
 
-  private routes: Route[] = [];
+  private actions: Action[] = [];
 
   constructor(userOptions?: UserOptions, deps?: Dependencies) {
     const config = Object.assign(this.defaultConfig, userOptions);
@@ -133,115 +96,165 @@ class Bantam {
     });
   }
 
-  getRoutes(): Route[] {
-    if (this.routes.length === 0) {
+  getActions(): Action[] {
+    if (this.actions.length === 0) {
       this.logger.error(
-        'You have no routes. Check for files in the actions folder and then restart the app.',
+        'You have no loaded actions. Check for files in the actions folder.',
       );
     }
-    return this.routes;
+    return this.actions;
   }
 
   // @TODO: needs tests
-  async fetchRoutes(): Promise<Route[]> {
+  async discoverActions(): Promise<Action[]> {
     const actionFiles = await this.readActionsFolder();
-    const routes: Route[] = [];
+    const actions: Action[] = [];
     for (const fileName of actionFiles) {
       const pathName = encodeURI(fileName.replace(/\.[j|t]s/, ''));
-      const route: Route = {
+      const action: Action = {
         fileName: fileName,
         pathName: pathName,
       };
-      routes.push(route);
+      actions.push(action);
     }
-    this.routes = routes;
-    return routes;
+    this.actions = actions;
+    return actions;
   }
 
   // @TODO: needs tests
   loadActions(): void {
     const { actionsFolder } = this.getConfig();
 
-    const routes = this.getRoutes();
+    const actions = this.getActions();
 
-    const routesWithActions = routes.map(
-      (route): Route => {
+    const loadedActions = actions.map(
+      (action): Action => {
         try {
           // eslint-disable-next-line
-          const action = require(path.join(
+          const actionClass = require(path.join(
             process.cwd(),
             actionsFolder,
-            route.fileName,
+            action.fileName,
           ));
-          route.action = action;
+          action.actionClass = actionClass;
         } catch (error) {
           this.logger.error(
-            `Unable to load \`${route.fileName}\` action file.`,
+            `Unable to load \`${action.fileName}\` action file.`,
           );
         }
-        return route;
+        return action;
       },
     );
 
-    this.routes = routesWithActions;
+    this.actions = loadedActions;
   }
 
-  // @TODO: needs tests
-  introspectActionMethods(action: Action): MethodsMap {
+  introspectMethods(action: BantamAction): MethodsDict {
     const keys = Reflect.ownKeys(action.prototype);
-    const methodsMap: MethodsMap = {
+    const methodsDict: MethodsDict = {
       get: [],
       post: [],
       patch: [],
       delete: [],
     };
+    const GET_METHOD_RE = /^(get\w*|fetchAll|fetchSingle)$/;
+    const POST_METHOD_RE = /^(set\w*|create)$/;
+    const PATCH_METHOD_RE = /^update$/;
+    const DELETE_METHOD_RE = /^delete$/;
     for (const key of keys) {
       const propertyName = String(key);
       const isGetMethod = GET_METHOD_RE.test(propertyName);
       const isPostMethod = POST_METHOD_RE.test(propertyName);
       const isPatchMethod = PATCH_METHOD_RE.test(propertyName);
       const isDeleteMethod = DELETE_METHOD_RE.test(propertyName);
-      if (isGetMethod) methodsMap.get.push(propertyName);
-      if (isPostMethod) methodsMap.post.push(propertyName);
-      if (isPatchMethod) methodsMap.patch.push(propertyName);
-      if (isDeleteMethod) methodsMap.delete.push(propertyName);
+      if (isGetMethod) methodsDict.get.push(propertyName);
+      if (isPostMethod) methodsDict.post.push(propertyName);
+      if (isPatchMethod) methodsDict.patch.push(propertyName);
+      if (isDeleteMethod) methodsDict.delete.push(propertyName);
     }
-    return methodsMap;
+    return methodsDict;
+  }
+
+  makeUrl(pathName: string, method: string): string {
+    const { actionsIndexFile } = this.getConfig();
+    let url = actionsIndexFile === pathName ? '/' : `/${pathName}`;
+    const INDI_RES_RE = /^(fetchSingle|update|delete)$/;
+    const isIndividualResource = INDI_RES_RE.test(method);
+    if (isIndividualResource) {
+      url = `${url}/:id`;
+    }
+    return url;
+  }
+
+  // @TODO: needs tests
+  makeRoutes(pathName: string, action: BantamAction): Route[] {
+    const methodsDict = this.introspectMethods(action);
+    const mapToRoute = (verb: HttpVerb) => (method: string): Route => ({
+      method,
+      verb,
+      url: this.makeUrl(pathName, method),
+    });
+    const getRoutes = methodsDict.get.map(mapToRoute('get'));
+    const postRoutes = methodsDict.post.map(mapToRoute('post'));
+    const patchRoutes = methodsDict.patch.map(mapToRoute('patch'));
+    const deleteRoutes = methodsDict.delete.map(mapToRoute('delete'));
+    return [].concat(getRoutes, postRoutes, patchRoutes, deleteRoutes);
   }
 
   // @TODO: needs tests
   bindRoutes(router: KoaRouter): void {
-    const routes = this.getRoutes();
+    const actions = this.getActions();
 
-    for (const { pathName, action } of routes) {
-      if (typeof action === 'undefined') {
-        this.logger.error(`No actions loaded for \`${pathName}\` route.`);
+    for (const action of actions) {
+      const { pathName, actionClass } = action;
+      const routes = this.makeRoutes(pathName, actionClass);
+      action.routes = routes;
+
+      if (routes.length === 0) {
+        this.logger.error(`No routes found for \`${pathName}\` action.`);
         continue;
       }
 
-      // const methods = this.introspectActionMethods(action);
-      // for (const { method } of methods) {
-      //   try {
-      //     console.log(method);
-      //   } catch (error) {
-      //     this.logger.error(`Unable to bind method \`${method}\` from \`${pathName}\` action to route.`);
-      //   }
-      // }
-    }
-  }
+      for (const { method, verb, url } of routes) {
+        try {
+          router[verb](url, (ctx: Context) => {
+            const CTX_ONLY_RE = /^(get\w*|fetchAll)$/;
+            const CTX_ID_RE = /^(fetchSingle|delete)$/;
+            const CTX_BODY_RE = /^(set\w*|create)$/;
+            const CTX_ID_BODY_RE = /^update$/;
 
-  getApp(): Koa {
-    if (typeof this.app === 'undefined') {
-      this.logger.error('Koa application has not been initialised.');
+            const isContextOnly = CTX_ONLY_RE.test(method);
+            const isContextId = CTX_ID_RE.test(method);
+            const isContextBody = CTX_BODY_RE.test(method);
+            const isContextIdBody = CTX_ID_BODY_RE.test(method);
+
+            const id = ctx.params.id;
+            const body = ctx.request.body;
+
+            const args = [];
+            if (isContextOnly) args.push(ctx);
+            if (isContextId) args.push(id, ctx);
+            if (isContextBody) args.push(body, ctx);
+            if (isContextIdBody) args.push(id, body, ctx);
+
+            actionClass[method](...args);
+          });
+        } catch (error) {
+          this.logger.error(
+            `Unable to bind method \`${method}\` from \`${pathName}\` action to route.`,
+          );
+        }
+      }
     }
-    return this.app;
+
+    this.actions = actions;
   }
 
   async init(): Promise<Bantam> {
     const app = new Koa();
     const router = new KoaRouter();
 
-    await this.fetchRoutes();
+    await this.discoverActions();
 
     this.loadActions();
 
@@ -252,6 +265,13 @@ class Bantam {
     this.app = app;
 
     return this;
+  }
+
+  getApp(): Koa {
+    if (typeof this.app === 'undefined') {
+      this.logger.error('Koa application has not been initialised.');
+    }
+    return this.app;
   }
 
   extend(callback: (app: Koa) => Koa): Bantam {

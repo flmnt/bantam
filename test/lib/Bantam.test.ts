@@ -112,7 +112,19 @@ class MockAction implements Action {
 test('Find action methods through introspection', () => {
   const app = new Bantam();
   const Action = MockAction;
-  const methods = app.introspectActionMethods(Action);
+  const methods = app.introspectMethods(Action);
+  expect(methods).toStrictEqual({
+    get: ['fetchAll', 'fetchSingle', 'getCustom'],
+    post: ['create', 'setCustom'],
+    patch: ['update'],
+    delete: ['delete'],
+  });
+});
+
+test('Create routes from methods map', () => {
+  const app = new Bantam();
+  const Action = MockAction;
+  const methods = app.introspectMethods(Action);
   expect(methods).toStrictEqual({
     get: ['fetchAll', 'fetchSingle', 'getCustom'],
     post: ['create', 'setCustom'],
