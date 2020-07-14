@@ -14,7 +14,7 @@ import {
   writeError,
 } from './utils/messages';
 import { tsActionTemplate, jsActionTemplate } from './utils/templates';
-import { CliOptions } from '../types/Bantam';
+import { CliOptions } from './bantam-init';
 
 //
 // ACTION

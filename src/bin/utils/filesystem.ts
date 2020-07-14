@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 
 import { FileExistsError } from './errors';
-import { CliOptions } from '../../types/Bantam';
+import { CliOptions } from '../bantam-init';
 
 export const createFile = async (
   filePath: string,

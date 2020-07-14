@@ -32,7 +32,13 @@ import {
   tsActionTemplate,
   jsActionTemplate,
 } from './utils/templates';
-import { SupportedLanguage } from '../types/Bantam';
+
+type SupportedLanguage = 'typescript' | 'javascript';
+
+export interface CliOptions {
+  actionsFolder: string;
+  language: SupportedLanguage;
+}
 
 //
 // INIT

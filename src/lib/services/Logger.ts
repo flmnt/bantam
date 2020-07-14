@@ -14,7 +14,7 @@ class Logger {
   }
 
   private write(message: string): void {
-    this.writeStream.write(`\n${BANTAM}${message}\n\n`);
+    this.writeStream.write(`${BANTAM}${message}\n`);
   }
 
   info(message: string): void {

@@ -6,7 +6,19 @@ import KoaRouter from 'koa-router';
 import koaBodyParser from 'koa-bodyparser';
 
 import Logger from './services/Logger';
-import { Action as BantamAction } from '../types/Bantam';
+
+export interface BantamAction {
+  fetchAll?: (ctx: Context) => void;
+  fetchSingle?: (id: string, ctx: Context) => void;
+  create?: (data: any, ctx: Context) => void;
+  update?: (id: string, data: any, ctx: Context) => void;
+  delete?: (id: string, ctx: Context) => void;
+  [method: string]: any;
+}
+
+interface ActionConstructor extends BantamAction {
+  new: (...args: any) => BantamAction;
+}
 
 interface UserOptions {
   port?: number;
@@ -39,7 +51,8 @@ interface Route {
 export interface Action {
   fileName: string;
   pathName: string;
-  actionClass?: BantamAction;
+  actionClass?: ActionConstructor;
+  actionObj?: BantamAction;
   routes?: Route[];
 }
 
@@ -63,6 +76,8 @@ class Bantam {
 
   private app: Koa;
 
+  readonly router: KoaRouter;
+
   private config: Config;
 
   private actions: Action[] = [];
@@ -71,6 +86,8 @@ class Bantam {
     const config = Object.assign(this.defaultConfig, userOptions);
     this.setConfig(config);
     this.logger = typeof deps === 'undefined' ? new Logger() : deps.logger;
+    this.app = new Koa();
+    this.router = new KoaRouter();
   }
 
   getConfig(): Config {
@@ -131,16 +148,18 @@ class Bantam {
       (action): Action => {
         try {
           // eslint-disable-next-line
-          const actionClass = require(path.join(
+          const ActionClass = require(path.join(
             process.cwd(),
             actionsFolder,
             action.fileName,
           ));
-          action.actionClass = actionClass;
+          action.actionClass = ActionClass;
+          action.actionObj = new ActionClass();
         } catch (error) {
           this.logger.error(
             `Unable to load \`${action.fileName}\` action file.`,
           );
+          throw error;
         }
         return action;
       },
@@ -149,8 +168,8 @@ class Bantam {
     this.actions = loadedActions;
   }
 
-  introspectMethods(action: BantamAction): MethodsDict {
-    const keys = Reflect.ownKeys(action.prototype);
+  introspectMethods(actionClass: ActionConstructor): MethodsDict {
+    const keys = Reflect.ownKeys(actionClass.prototype);
     const methodsDict: MethodsDict = {
       get: [],
       post: [],
@@ -187,8 +206,10 @@ class Bantam {
   }
 
   // @TODO: needs tests
-  makeRoutes(pathName: string, action: BantamAction): Route[] {
-    const methodsDict = this.introspectMethods(action);
+  makeRoutes(pathName: string, actionClass?: ActionConstructor): Route[] {
+    if (typeof actionClass === 'undefined') return [];
+
+    const methodsDict = this.introspectMethods(actionClass);
     const mapToRoute = (verb: HttpVerb) => (method: string): Route => ({
       method,
       verb,
@@ -202,11 +223,13 @@ class Bantam {
   }
 
   // @TODO: needs tests
-  bindRoutes(router: KoaRouter): void {
+  bindRoutes(): void {
+    const router = this.router;
+
     const actions = this.getActions();
 
     for (const action of actions) {
-      const { pathName, actionClass } = action;
+      const { pathName, actionClass, actionObj } = action;
       const routes = this.makeRoutes(pathName, actionClass);
       action.routes = routes;
 
@@ -237,7 +260,7 @@ class Bantam {
             if (isContextBody) args.push(body, ctx);
             if (isContextIdBody) args.push(id, body, ctx);
 
-            actionClass[method](...args);
+            actionObj[method](...args);
           });
         } catch (error) {
           this.logger.error(
@@ -248,23 +271,6 @@ class Bantam {
     }
 
     this.actions = actions;
-  }
-
-  async init(): Promise<Bantam> {
-    const app = new Koa();
-    const router = new KoaRouter();
-
-    await this.discoverActions();
-
-    this.loadActions();
-
-    this.bindRoutes(router);
-
-    app.use(koaBodyParser()).use(router.routes()).use(router.allowedMethods());
-
-    this.app = app;
-
-    return this;
   }
 
   getApp(): Koa {
@@ -280,11 +286,26 @@ class Bantam {
     return this;
   }
 
-  run(): Bantam {
+  async run(): Promise<Bantam> {
     const app = this.getApp();
 
+    await this.discoverActions();
+
+    this.loadActions();
+
+    this.bindRoutes();
+
+    app
+      .use(koaBodyParser())
+      .use(this.router.routes())
+      .use(this.router.allowedMethods());
+
     try {
+      // @TODO: dev port?
       app.listen({ port: 3000 });
+      this.logger.success(
+        'Application loaded! Serving at http://localhost:3000/',
+      );
     } catch (error) {
       this.logger.error('Unable to start Bantam application!');
     }

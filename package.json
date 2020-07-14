@@ -1,5 +1,5 @@
 {
-  "name": "@_filament/bantam",
+  "name": "@flmnt/bantam",
   "version": "0.0.1",
   "description": "A micro framework for micro services",
   "engines": {
@@ -8,6 +8,7 @@
     "ts-node": ">=8.10.2"
   },
   "main": "lib/index.js",
+  "types": "lib/Bantam.d.ts",
   "directories": {
     "lib": "lib",
     "bin": "bin",
@@ -19,6 +20,8 @@
     "lib"
   ],
   "scripts": {
+    "build": "tsc --project tsconfig.build.json",
+    "build:watch": "tsc --watch --project tsconfig.build.json",
     "test": "jest --ci",
     "test:watch": "jest --watch",
     "check": "npm-run-all check:*",
@@ -30,7 +33,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/FilamentSolutions/bantam.git"
+    "url": "git+https://github.com/flmnt/bantam.git"
   },
   "keywords": [
     "nodejs",
@@ -41,9 +44,9 @@
   "author": "Matt Davies <matt@filament.so>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/FilamentSolutions/bantam/issues"
+    "url": "https://github.com/flmnt/bantam/issues"
   },
-  "homepage": "https://github.com/FilamentSolutions/bantam#readme",
+  "homepage": "https://github.com/flmnt/bantam#readme",
   "dependencies": {
     "chalk": "^4.1.0",
     "clear": "^0.1.0",
@@ -55,7 +58,8 @@
   "peerDependencies": {
     "@types/koa": "~2.11.3",
     "node-dev": "~5.0.0",
-    "ts-node-dev": "~1.0.0"
+    "ts-node-dev": "~1.0.0",
+    "ts-node": "^8.10.2"
   },
   "devDependencies": {
     "@types/jest": "^26.0.4",

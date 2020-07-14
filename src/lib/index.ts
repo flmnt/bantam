@@ -1,3 +1,2 @@
 import Bantam from './Bantam';
-
-export default Bantam;
+module.exports = Bantam;
