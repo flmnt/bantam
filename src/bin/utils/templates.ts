@@ -57,15 +57,15 @@ export const jsActionTemplate = (
   }
 }
 
-export default ${className};
+module.exports = ${className};
 `;
 
 export const tsActionTemplate = (
   className: string,
 ): string => `import { Context } from 'koa';
-import { Action } from '@_filament/bantam';
+import { BantamAction } from '@flmnt/bantam';
 
-class ${className} implements Action {
+class ${className} implements BantamAction {
   fetchAll(ctx: Context): void {
     // ctx.body = 'YOUR RESPONSE';
   }
