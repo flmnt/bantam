@@ -1,6 +1,15 @@
-export const indexTemplate = (
+export const jsIndexTemplate = (
   options: string = '',
-): string => `import Bantam from '@_filament/bantam';
+): string => `const Bantam = require('@flmnt/bantam');
+
+const app = new Bantam(${options});
+
+app.run();
+`;
+
+export const tsIndexTemplate = (
+  options: string = '',
+): string => `import Bantam from '@flmnt/bantam';
 
 const app = new Bantam(${options});
 
@@ -37,23 +46,23 @@ export const jsActionTemplate = (
   className: string,
 ): string => `class ${className} {
   fetchAll(ctx) {
-    // ctx.body = 'YOUR RESPONSE';
+    ctx.body = 'Bantam: ${className} -> fetchAll()';
   }
 
   fetchSingle(id, ctx) {
-    // ctx.body = 'YOUR RESPONSE';
+    ctx.body = 'Bantam: ${className} -> fetchSingle()';
   }
 
   create(data, ctx) {
-    // ctx.body = 'YOUR RESPONSE';
+    ctx.body = 'Bantam: ${className} -> create()';
   }
 
   update(id, data, ctx) {
-    // ctx.body = 'YOUR RESPONSE';
+    ctx.body = 'Bantam: ${className} -> update()';
   }
 
   delete(id, ctx) {
-    // ctx.body = 'YOUR RESPONSE';
+    ctx.body = 'Bantam: ${className} -> delete()';
   }
 }
 
@@ -67,23 +76,23 @@ import { BantamAction } from '@flmnt/bantam';
 
 class ${className} implements BantamAction {
   fetchAll(ctx: Context): void {
-    // ctx.body = 'YOUR RESPONSE';
+    ctx.body = 'Bantam: ${className} -> fetchAll()';
   }
 
   fetchSingle(id: string, ctx: Context): void {
-    // ctx.body = 'YOUR RESPONSE';
+    ctx.body = 'Bantam: ${className} -> fetchSingle()';
   }
 
   create(data: any, ctx: Context): void {
-    // ctx.body = 'YOUR RESPONSE';
+    ctx.body = 'Bantam: ${className} -> create()';
   }
 
   update(id: string, data: any, ctx: Context): void {
-    // ctx.body = 'YOUR RESPONSE';
+    ctx.body = 'Bantam: ${className} -> update()';
   }
 
   delete(id: string, ctx: Context): void {
-    // ctx.body = 'YOUR RESPONSE';
+    ctx.body = 'Bantam: ${className} -> delete()';
   }
 }
 

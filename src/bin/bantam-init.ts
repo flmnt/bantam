@@ -27,10 +27,11 @@ import {
   confirmStructureMsg,
 } from './utils/messages';
 import {
-  indexTemplate,
+  jsIndexTemplate,
+  tsIndexTemplate,
   calculateRequiredOptions,
-  tsActionTemplate,
   jsActionTemplate,
+  tsActionTemplate,
 } from './utils/templates';
 
 type SupportedLanguage = 'typescript' | 'javascript';
@@ -158,6 +159,7 @@ ${actionFilesFlat}`;
 
   try {
     writeMsg(infoMsg(`Creating ${indexFile} file...`));
+    const indexTemplate = isTs ? tsIndexTemplate : jsIndexTemplate;
     await createFile(indexFile, indexTemplate(options));
     writeMsg(successMsg(' done!'), NEW_LINE.AFTER);
   } catch (error) {
