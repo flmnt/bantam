@@ -122,6 +122,46 @@ class Bantam {
     return this.actions;
   }
 
+  logRoutes(): void {
+    const actions = this.getActions();
+    const routes: Route[] = [];
+    for (const action of actions) {
+      for (const route of action.routes) {
+        routes.push(route);
+      }
+    }
+
+    const routesToLog: string[] = [];
+    routesToLog.push('Available Routes:\n');
+
+    const stringToLength = (s: string): number => s.length;
+    const reduceToLongest = (l: number, prev: number): number =>
+      l > prev ? l : prev;
+    const longestFileName = actions
+      .map(({ fileName }) => fileName)
+      .map(stringToLength)
+      .reduce(reduceToLongest, 0);
+    const longestUrl = routes
+      .map(({ url }) => url)
+      .map(stringToLength)
+      .reduce(reduceToLongest, 0);
+    const columnFormat = (s: string, l: number): string =>
+      `${s}${' '.repeat(l - s.length)}`;
+
+    for (const { fileName, routes } of actions) {
+      for (const { method, verb, url } of routes) {
+        routesToLog.push(
+          `${columnFormat(verb, 6).toUpperCase()} -> ${columnFormat(
+            url,
+            longestUrl,
+          )} -> ${columnFormat(fileName, longestFileName)} -> ${method}`,
+        );
+      }
+    }
+
+    this.logger.info(routesToLog.join('\n'));
+  }
+
   // @TODO: needs tests
   async discoverActions(): Promise<Action[]> {
     const actionFiles = await this.readActionsFolder();
@@ -196,11 +236,20 @@ class Bantam {
 
   makeUrl(pathName: string, method: string): string {
     const { actionsIndexFile } = this.getConfig();
-    let url = actionsIndexFile === pathName ? '/' : `/${pathName}`;
+    let url = actionsIndexFile === pathName ? '/' : `/${pathName}/`;
     const INDI_RES_RE = /^(fetchSingle|update|delete)$/;
     const isIndividualResource = INDI_RES_RE.test(method);
     if (isIndividualResource) {
-      url = `${url}/:id`;
+      url = `${url}:id`;
+    }
+    const CUSTOM_METHOD_RE = /^[g|s]et\w*$/;
+    const isCustomMethod = CUSTOM_METHOD_RE.test(method);
+    if (isCustomMethod) {
+      const slug = method
+        .replace(/^[g|s]et/, '')
+        .replace(/(?!^)([A-Z])/g, '-$1')
+        .toLowerCase();
+      url = `${url}${slug}/`;
     }
     return url;
   }
@@ -280,7 +329,7 @@ class Bantam {
     return this.app;
   }
 
-  extend(callback: (app: Koa) => Koa): Bantam {
+  extend(callback: (koaApp: Koa) => Koa): Bantam {
     const app = this.getApp();
     this.app = callback(app);
     return this;
@@ -300,11 +349,13 @@ class Bantam {
       .use(this.router.routes())
       .use(this.router.allowedMethods());
 
+    const { port, devPort } = this.getConfig();
+    const listenPort = process.env.NODE_ENV === 'production' ? port : devPort;
+
     try {
-      // @TODO: dev port?
-      app.listen({ port: 3000 });
+      app.listen({ port: listenPort });
       this.logger.success(
-        'Application loaded! Serving at http://localhost:3000/',
+        `Application loaded! Serving at http://localhost:${listenPort}/`,
       );
     } catch (error) {
       this.logger.error('Unable to start Bantam application!');
