@@ -1,14 +1,26 @@
 import {
-  indexTemplate,
+  jsIndexTemplate,
+  tsIndexTemplate,
   jsActionTemplate,
   tsActionTemplate,
   calculateRequiredOptions,
 } from '../../../src/bin/utils/templates';
 
-test('Index template returns correct template', () => {
+test('JS index template returns correct template', () => {
   const options = '{ port: 3001 }';
-  const template = indexTemplate(options);
-  expect(template).toBe(`import Bantam from '@_filament/bantam';
+  const template = jsIndexTemplate(options);
+  expect(template).toBe(`const Bantam = require('@flmnt/bantam');
+
+const app = new Bantam(${options});
+
+app.run();
+`);
+});
+
+test('TS index template returns correct template', () => {
+  const options = '{ port: 3001 }';
+  const template = tsIndexTemplate(options);
+  expect(template).toBe(`import Bantam from '@flmnt/bantam';
 
 const app = new Bantam(${options});
 
@@ -21,27 +33,27 @@ test('JS action template returns correct template', () => {
   const template = jsActionTemplate(className);
   expect(template).toBe(`class ${className} {
   fetchAll(ctx) {
-    // ctx.body = 'YOUR RESPONSE';
+    ctx.body = 'Bantam: Test -> fetchAll()';
   }
 
   fetchSingle(id, ctx) {
-    // ctx.body = 'YOUR RESPONSE';
+    ctx.body = 'Bantam: Test -> fetchSingle()';
   }
 
   create(data, ctx) {
-    // ctx.body = 'YOUR RESPONSE';
+    ctx.body = 'Bantam: Test -> create()';
   }
 
   update(id, data, ctx) {
-    // ctx.body = 'YOUR RESPONSE';
+    ctx.body = 'Bantam: Test -> update()';
   }
 
   delete(id, ctx) {
-    // ctx.body = 'YOUR RESPONSE';
+    ctx.body = 'Bantam: Test -> delete()';
   }
 }
 
-export default ${className};
+module.exports = ${className};
 `);
 });
 
@@ -49,27 +61,27 @@ test('TS action template returns correct template', () => {
   const className = 'Test';
   const template = tsActionTemplate(className);
   expect(template).toBe(`import { Context } from 'koa';
-import { Action } from '@_filament/bantam';
+import { BantamAction } from '@flmnt/bantam';
 
-class ${className} implements Action {
+class ${className} implements BantamAction {
   fetchAll(ctx: Context): void {
-    // ctx.body = 'YOUR RESPONSE';
+    ctx.body = 'Bantam: Test -> fetchAll()';
   }
 
   fetchSingle(id: string, ctx: Context): void {
-    // ctx.body = 'YOUR RESPONSE';
+    ctx.body = 'Bantam: Test -> fetchSingle()';
   }
 
   create(data: any, ctx: Context): void {
-    // ctx.body = 'YOUR RESPONSE';
+    ctx.body = 'Bantam: Test -> create()';
   }
 
   update(id: string, data: any, ctx: Context): void {
-    // ctx.body = 'YOUR RESPONSE';
+    ctx.body = 'Bantam: Test -> update()';
   }
 
   delete(id: string, ctx: Context): void {
-    // ctx.body = 'YOUR RESPONSE';
+    ctx.body = 'Bantam: Test -> delete()';
   }
 }
 
