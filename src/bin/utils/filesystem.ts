@@ -49,5 +49,7 @@ export const createBantamRCFile = async (options: CliOptions): Promise<void> =>
     `module.exports = {
   actionsFolder: '${options.actionsFolder}',
   language: '${options.language}',
-};`,
+  entrypoint: '${options.entrypoint}',
+};
+`,
   );

@@ -39,6 +39,7 @@ type SupportedLanguage = 'typescript' | 'javascript';
 export interface CliOptions {
   actionsFolder: string;
   language: SupportedLanguage;
+  entrypoint: string;
 }
 
 //
@@ -202,7 +203,12 @@ ${actionFilesFlat}`;
 
   try {
     writeMsg(infoMsg(`Creating .bantamrc.js file...`));
-    await createBantamRCFile({ actionsFolder, language });
+    // @TODO: add different entrypoint if non default
+    await createBantamRCFile({
+      actionsFolder,
+      language,
+      entrypoint: indexFile,
+    });
     writeMsg(successMsg(' done!'), NEW_LINE.AFTER);
   } catch (error) {
     if (error instanceof FileExistsError) {

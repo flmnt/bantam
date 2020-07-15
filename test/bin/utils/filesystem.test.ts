@@ -64,6 +64,7 @@ test('Create config method writes options to file', async () => {
   await createBantamRCFile({
     actionsFolder: 'example',
     language: 'javascript',
+    entrypoint: 'index.js',
   });
   expect(
     writeFileStub.calledOnceWith(
@@ -71,7 +72,9 @@ test('Create config method writes options to file', async () => {
       `module.exports = {
   actionsFolder: 'example',
   language: 'javascript',
-};`,
+  entrypoint: 'index.js',
+};
+`,
     ),
   ).toBeTruthy();
 });
