@@ -19,7 +19,7 @@ test('Logger can write to stdout', () => {
   const logger = new Logger(writeStream);
   // @ts-expect-error
   logger.write(message);
-  expect(mockWrite).toHaveBeenCalledWith(`\n${BANTAM}${message}\n\n`);
+  expect(mockWrite).toHaveBeenCalledWith(`${BANTAM}${message}\n`);
 });
 
 test('Logger can write info message', () => {
