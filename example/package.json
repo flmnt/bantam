@@ -7,8 +7,11 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
-  "license": "UNLICENSED",
+  "license": "ISC",
   "dependencies": {
     "@flmnt/bantam": "file:.."
+  },
+  "devDependencies": {
+    "node-dev": "^5.0.0"
   }
 }
