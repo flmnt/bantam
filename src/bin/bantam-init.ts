@@ -203,7 +203,6 @@ ${actionFilesFlat}`;
 
   try {
     writeMsg(infoMsg(`Creating .bantamrc.js file...`));
-    // @TODO: add different entrypoint if non default
     await createBantamRCFile({
       actionsFolder,
       language,

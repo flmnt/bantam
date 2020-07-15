@@ -4,7 +4,13 @@ export const jsIndexTemplate = (
 
 const app = new Bantam(${options});
 
-app.run();
+if (process.env.NODE_ENV === 'production') {
+  app.run();
+} else {
+  app.run().then((app) => {
+    app.logRoutes();
+  });
+}
 `;
 
 export const tsIndexTemplate = (
@@ -13,7 +19,13 @@ export const tsIndexTemplate = (
 
 const app = new Bantam(${options});
 
-app.run();
+if (process.env.NODE_ENV === 'production') {
+  app.run();
+} else {
+  app.run().then((app) => {
+    app.logRoutes();
+  });
+}
 `;
 
 export const calculateRequiredOptions = (

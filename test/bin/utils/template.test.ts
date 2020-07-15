@@ -13,7 +13,13 @@ test('JS index template returns correct template', () => {
 
 const app = new Bantam(${options});
 
-app.run();
+if (process.env.NODE_ENV === 'production') {
+  app.run();
+} else {
+  app.run().then((app) => {
+    app.logRoutes();
+  });
+}
 `);
 });
 
@@ -24,7 +30,13 @@ test('TS index template returns correct template', () => {
 
 const app = new Bantam(${options});
 
-app.run();
+if (process.env.NODE_ENV === 'production') {
+  app.run();
+} else {
+  app.run().then((app) => {
+    app.logRoutes();
+  });
+}
 `);
 });
 

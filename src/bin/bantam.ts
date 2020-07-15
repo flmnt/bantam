@@ -4,6 +4,7 @@ import yargs from 'yargs';
 
 import { runInit } from './bantam-init';
 import { runAction } from './bantam-action';
+import { runServe } from './bantam-serve';
 
 interface ActionArgs {
   file: string;
@@ -31,16 +32,17 @@ const cli = yargs
     },
     ({ file }: ActionArgs) => runAction(file),
   )
-  // .command(
-  //   'serve',
-  //   'Serve your application',
-  //   (yargs) => {},
-  //   ({ dev }: ServeArgs) => runServe(dev),
-  // )
-  .option('dev', {
-    alias: 'd',
-    type: 'boolean',
-    description: 'Run in dev mode, with livereloading',
-  })
+  .command(
+    'serve',
+    'Serve your application',
+    (yargs) => {
+      yargs.option('dev', {
+        alias: 'd',
+        type: 'boolean',
+        description: 'Run in dev mode, with livereloading',
+      });
+    },
+    ({ dev }: ServeArgs) => runServe(dev),
+  )
   .demandCommand(1, 'Please provide a command')
   .help().argv;
