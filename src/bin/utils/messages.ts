@@ -3,6 +3,7 @@ import chalk from 'chalk';
 export const infoMsg = chalk.bold.blue;
 export const successMsg = chalk.bold.green;
 export const errorMsg = chalk.bold.red;
+export const bantamMsg = chalk.bold.yellow;
 
 export enum NEW_LINE {
   BEFORE,
@@ -29,10 +30,11 @@ export const writeMsg = (message: string, spacing?: NEW_LINE): void => {
   process.stdout.write(str);
 };
 
-export const writeError = (message: string): void =>
-  console.error(`\n${message}\n`);
+export const writeError = (message: string): void => {
+  process.stderr.write(`\n${message}\n`);
+};
 
-export const BANTAM: string = chalk.bold.yellow('BANTAM');
+export const BANTAM: string = bantamMsg('BANTAM');
 
 export const welcomeMsg = (): string => `
 ${BANTAM}
