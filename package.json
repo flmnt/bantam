@@ -20,8 +20,9 @@
     "lib"
   ],
   "scripts": {
-    "build": "tsc --project tsconfig.build.json",
-    "build:watch": "tsc --watch --project tsconfig.build.json",
+    "build": "npm-run-all build:*",
+    "build:bin": "tsc --project tsconfig.bin.json",
+    "build:lib": "tsc --project tsconfig.lib.json",
     "test": "jest --ci",
     "test:watch": "jest --watch",
     "check": "npm-run-all check:*",

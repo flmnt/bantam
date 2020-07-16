@@ -1,13 +1,12 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "declaration": true,
-    "declarationMap": true,
-    "outDir": "lib",
+    // "declaration": true,
+    // "declarationMap": true,
+    "outDir": "bin",
     "moduleResolution": "Node",
     "module": "CommonJS",
     "target": "ESNext"
   },
-  "include": ["src/lib/**/*"],
-  "exclude": ["node_modules"]
+  "include": ["src/bin/**/*"]
 }

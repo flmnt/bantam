@@ -2,5 +2,6 @@
   "compilerOptions": {
     "esModuleInterop": true,
     "lib": ["ES6"]
-  }
+  },
+  "exclude": ["node_modules"]
 }
