@@ -5,11 +5,9 @@ export const jsIndexTemplate = (
 const app = new Bantam(${options});
 
 if (process.env.NODE_ENV === 'production') {
-  app.run();
+  app.run().then(() => {}, () => {});
 } else {
-  app.run().then((app) => {
-    app.logRoutes();
-  });
+  app.run().then((app) => app.logRoutes(), () => {});
 }
 `;
 
@@ -20,11 +18,9 @@ export const tsIndexTemplate = (
 const app = new Bantam(${options});
 
 if (process.env.NODE_ENV === 'production') {
-  app.run();
+  app.run().then(() => {}, () => {});
 } else {
-  app.run().then((app) => {
-    app.logRoutes();
-  });
+  app.run().then((app) => app.logRoutes(), () => {});
 }
 `;
 
