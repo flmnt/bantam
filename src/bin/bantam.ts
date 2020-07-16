@@ -15,7 +15,7 @@ interface ServeArgs {
 }
 
 // eslint-disable-next-line
-const cli = yargs
+yargs
   .command(
     'init',
     'Configure a Bantam application',
@@ -44,5 +44,5 @@ const cli = yargs
     },
     ({ dev }: ServeArgs) => runServe(dev),
   )
-  .demandCommand(1, 'Please provide a command')
+  .demandCommand(1, 'What would you like to do?')
   .help().argv;
