@@ -16,9 +16,7 @@ export interface BantamAction {
   [method: string]: any;
 }
 
-interface ActionConstructor extends BantamAction {
-  new: (...args: any) => BantamAction;
-}
+type Constructor<T> = new (...args: any) => T;
 
 interface UserOptions {
   port?: number;
@@ -51,7 +49,7 @@ interface Route {
 export interface Action {
   fileName: string;
   pathName: string;
-  actionClass?: ActionConstructor;
+  actionClass?: Constructor<BantamAction>;
   actionObj?: BantamAction;
   routes?: Route[];
 }
@@ -102,7 +100,7 @@ class Bantam {
     const { actionsFolder } = this.getConfig();
     return new Promise((resolve) => {
       fs.readdir(actionsFolder, (error, files) => {
-        if (error instanceof Error) {
+        if (error instanceof Error || typeof files === 'undefined') {
           this.logger.error(
             'Unable to read actions folder! Check `actionsFolder` config setting.',
           );
@@ -162,7 +160,6 @@ class Bantam {
     this.logger.info(routesToLog.join('\n'));
   }
 
-  // @TODO: needs tests
   async discoverActions(): Promise<Action[]> {
     const actionFiles = await this.readActionsFolder();
     const actions: Action[] = [];
@@ -178,37 +175,40 @@ class Bantam {
     return actions;
   }
 
-  // @TODO: needs tests
-  loadActions(): void {
+  requireActionFile(fileName: string): Constructor<BantamAction> | null {
     const { actionsFolder } = this.getConfig();
 
+    try {
+      // eslint-disable-next-line
+      const ActionClass: Constructor<BantamAction> = require(path.join(
+        process.cwd(),
+        actionsFolder,
+        fileName,
+      ));
+      return ActionClass;
+    } catch (error) {
+      this.logger.error(`Unable to load \`${fileName}\` action file.`);
+    }
+  }
+
+  loadActions(): void {
     const actions = this.getActions();
 
     const loadedActions = actions.map(
       (action): Action => {
-        try {
-          // eslint-disable-next-line
-          const ActionClass = require(path.join(
-            process.cwd(),
-            actionsFolder,
-            action.fileName,
-          ));
+        const ActionClass = this.requireActionFile(action.fileName);
+        if (ActionClass !== null) {
           action.actionClass = ActionClass;
           action.actionObj = new ActionClass();
-        } catch (error) {
-          this.logger.error(
-            `Unable to load \`${action.fileName}\` action file.`,
-          );
-          throw error;
+          return action;
         }
-        return action;
       },
     );
 
     this.actions = loadedActions;
   }
 
-  introspectMethods(actionClass: ActionConstructor): MethodsDict {
+  introspectMethods(actionClass: any): MethodsDict {
     const keys = Reflect.ownKeys(actionClass.prototype);
     const methodsDict: MethodsDict = {
       get: [],
@@ -254,8 +254,10 @@ class Bantam {
     return url;
   }
 
-  // @TODO: needs tests
-  makeRoutes(pathName: string, actionClass?: ActionConstructor): Route[] {
+  makeRoutes(
+    pathName: string,
+    actionClass?: Constructor<BantamAction>,
+  ): Route[] {
     if (typeof actionClass === 'undefined') return [];
 
     const methodsDict = this.introspectMethods(actionClass);
@@ -271,7 +273,34 @@ class Bantam {
     return [].concat(getRoutes, postRoutes, patchRoutes, deleteRoutes);
   }
 
-  // @TODO: needs tests
+  routeToMethod(
+    actionObj: BantamAction,
+    method: string,
+  ): (ctx: Context) => void {
+    const CTX_ONLY_RE = /^(get\w*|fetchAll)$/;
+    const CTX_ID_RE = /^(fetchSingle|delete)$/;
+    const CTX_BODY_RE = /^(set\w*|create)$/;
+    const CTX_ID_BODY_RE = /^update$/;
+
+    const isContextOnly = CTX_ONLY_RE.test(method);
+    const isContextId = CTX_ID_RE.test(method);
+    const isContextBody = CTX_BODY_RE.test(method);
+    const isContextIdBody = CTX_ID_BODY_RE.test(method);
+
+    return (ctx: Context): void => {
+      const id = ctx.params.id;
+      const body = ctx.request.body;
+
+      const args = [];
+      if (isContextOnly) args.push(ctx);
+      if (isContextId) args.push(id, ctx);
+      if (isContextBody) args.push(body, ctx);
+      if (isContextIdBody) args.push(id, body, ctx);
+
+      actionObj[method](...args);
+    };
+  }
+
   bindRoutes(): void {
     const router = this.router;
 
@@ -283,34 +312,16 @@ class Bantam {
       action.routes = routes;
 
       if (routes.length === 0) {
-        this.logger.error(`No routes found for \`${pathName}\` action.`);
+        this.logger.error(`No methods found for \`${pathName}\` action.`);
         continue;
       }
 
       for (const { method, verb, url } of routes) {
         try {
-          router[verb](url, (ctx: Context) => {
-            const CTX_ONLY_RE = /^(get\w*|fetchAll)$/;
-            const CTX_ID_RE = /^(fetchSingle|delete)$/;
-            const CTX_BODY_RE = /^(set\w*|create)$/;
-            const CTX_ID_BODY_RE = /^update$/;
-
-            const isContextOnly = CTX_ONLY_RE.test(method);
-            const isContextId = CTX_ID_RE.test(method);
-            const isContextBody = CTX_BODY_RE.test(method);
-            const isContextIdBody = CTX_ID_BODY_RE.test(method);
-
-            const id = ctx.params.id;
-            const body = ctx.request.body;
-
-            const args = [];
-            if (isContextOnly) args.push(ctx);
-            if (isContextId) args.push(id, ctx);
-            if (isContextBody) args.push(body, ctx);
-            if (isContextIdBody) args.push(id, body, ctx);
-
-            actionObj[method](...args);
-          });
+          router[verb](url, this.routeToMethod(actionObj, method));
+          // routeToMethod is a bit obtuse, but it prevents
+          // slow RegEx queries being run every request
+          // effectively results in router[verb](url, (ctx) => action[method](...args));
         } catch (error) {
           this.logger.error(
             `Unable to bind method \`${method}\` from \`${pathName}\` action to route.`,
