@@ -1,14 +1,14 @@
 class Index {
   fetchAll(ctx) {
-    ctx.body = 'My Example';
+    ctx.body = 'Bantam: Index -> fetchAll()';
   }
 
-  getCustomMethod(ctx) {
-    ctx.body = 'Custom getter!';
+  getSayHelloMatt(ctx) {
+    ctx.body = 'Say hello to Matt';
   }
 
   fetchSingle(id, ctx) {
-    ctx.body = 'Bantam: Index -> fetchSingle()';
+    ctx.body = `Say hello to ${id}`;
   }
 
   create(data, ctx) {
@@ -21,10 +21,6 @@ class Index {
 
   delete(id, ctx) {
     ctx.body = 'Bantam: Index -> delete()';
-  }
-
-  setCustomMethod(data, ctx) {
-    ctx.body = 'Custom setter!';
   }
 }
 

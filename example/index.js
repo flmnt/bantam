@@ -4,6 +4,10 @@ const app = new Bantam({
   actionsFileExt: 'js',
 });
 
-app.run().then((app) => {
-  app.logRoutes();
-});
+if (process.env.NODE_ENV === 'production') {
+  app.run();
+} else {
+  app.run().then((app) => {
+    app.logRoutes();
+  });
+}
