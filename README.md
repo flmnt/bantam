@@ -13,7 +13,6 @@ Features include:
 - [convention over configuration](https://en.wikipedia.org/wiki/Convention_over_configuration) paradigm
 - expressive logging (decent error reporting!)
 - live reloading in developer mode
-- small package size (xx with all dependencies)
 
 ## Getting started
 
@@ -222,6 +221,21 @@ fetchAll(ctx) {
   ctx.body = 'Your response here';
   ctx.status = 201;
   ctx.set('Cache-Control', 'no-cache');
+}
+```
+
+## Async/Await Support
+
+Feel free to create synchronous or asynchronous action, methods. Bantam can handle both.
+
+```
+async getAsyncExample() {
+  const result = await findRecords();
+  ctx.body = result;
+}
+
+getSyncExample() {
+  ctx.body = 'static content';
 }
 ```
 

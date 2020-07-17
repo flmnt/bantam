@@ -276,7 +276,7 @@ class Bantam {
   routeToMethod(
     actionObj: BantamAction,
     method: string,
-  ): (ctx: Context, next: Promise<any>) => void {
+  ): (ctx: Context, next: Promise<any>) => Promise<any> {
     const CTX_ONLY_RE = /^(get\w*|fetchAll)$/;
     const CTX_ID_RE = /^(fetchSingle|delete)$/;
     const CTX_BODY_RE = /^(set\w*|create)$/;
@@ -287,7 +287,7 @@ class Bantam {
     const isContextBody = CTX_BODY_RE.test(method);
     const isContextIdBody = CTX_ID_BODY_RE.test(method);
 
-    return (ctx: Context, next?: Promise<any>): void => {
+    return async (ctx: Context, next?: Promise<any>): Promise<any> => {
       const id = ctx.params.id;
       // @ts-expect-error
       const body = ctx.request.body;
@@ -300,7 +300,7 @@ class Bantam {
 
       args.push(next);
 
-      actionObj[method](...args);
+      return actionObj[method](...args);
     };
   }
 
