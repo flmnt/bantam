@@ -289,6 +289,7 @@ class Bantam {
 
     return (ctx: Context): void => {
       const id = ctx.params.id;
+      // @ts-expect-error
       const body = ctx.request.body;
 
       const args = [];
