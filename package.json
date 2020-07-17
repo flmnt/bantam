@@ -20,6 +20,7 @@
     "lib"
   ],
   "scripts": {
+    "prepublishOnly": "npm run build",
     "build": "npm-run-all build:*",
     "build:bin": "tsc --project tsconfig.bin.json",
     "build:lib": "tsc --project tsconfig.lib.json",
