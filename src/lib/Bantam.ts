@@ -287,7 +287,7 @@ class Bantam {
     const isContextBody = CTX_BODY_RE.test(method);
     const isContextIdBody = CTX_ID_BODY_RE.test(method);
 
-    return (ctx: Context, next: Promise<any>): void => {
+    return (ctx: Context, next?: Promise<any>): void => {
       const id = ctx.params.id;
       // @ts-expect-error
       const body = ctx.request.body;
