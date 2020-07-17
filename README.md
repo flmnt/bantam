@@ -44,7 +44,7 @@ Or for Javascript:
 Once you have installed Bantam you can initialise your app; this can be done with either a brand new or existing app.
 
 ```
-% npx bantam init
+% npx @flmnt/bantam init
 ```
 
 Follow the CLI instructions and then start building your microservice!
@@ -124,7 +124,7 @@ And that's you ready to go!
 Start the development server with:
 
 ```
-% npx bantam serve --dev
+% npx @flmnt/bantam serve --dev
 ```
 
 Your application will be served on http://localhost:3000
@@ -136,7 +136,7 @@ In development mode, when you make changes to files the application will update 
 To serve your microservice in production use:
 
 ```
-% npx bantam serve
+% npx @flmnt/bantam serve
 ```
 
 Your application is served at http://your-host:3000
@@ -145,7 +145,7 @@ You can change the port number via the configuration options.
 
 ## .bantamrc.js
 
-After running `npx bantam init` you will have a `.bantamrc.js` file in your directory with some CLI config options like this:
+After running `npx @flmnt/bantam init` you will have a `.bantamrc.js` file in your directory with some CLI config options like this:
 
 ```
 module.exports = {
@@ -162,7 +162,7 @@ The `.bantamrc` file provides configuration options for the CLI. You only need t
 To add a new action (resource) you can either create a new file in the actions folder or use the CLI to make the file for you:
 
 ```
-% npx bantam action index.ts
+% npx @flmnt/bantam action index.ts
 ```
 
 You can add the standard methods (`fetchAll`, `fetchSingle`, `create`, `update`, `delete`) to an action class which will automatically create the standard routes.

@@ -25,12 +25,24 @@ import { CliOptions } from './bantam-init';
 const action = async (actionFile: string): Promise<string> => {
   clear();
 
-  // eslint-disable-next-line
-  const bantamOptions = require(path.resolve(process.cwd(), './.bantamrc.js'));
-  const options: CliOptions = bantamOptions;
+  let config: CliOptions;
 
-  const isTs = options.language === 'typescript';
-  const actionsFolder = options.actionsFolder;
+  try {
+    // eslint-disable-next-line
+    const options = require(path.resolve(process.cwd(), './.bantamrc.js'));
+    config = options;
+  } catch (error) {
+    writeMsg(
+      errorMsg(
+        'Cannot find .bantamrc.js file. Trying running `npx bantam init`',
+      ),
+      NEW_LINE.AFTER,
+    );
+    process.exit(1);
+  }
+
+  const isTs = config.language === 'typescript';
+  const actionsFolder = config.actionsFolder;
 
   try {
     writeMsg(
