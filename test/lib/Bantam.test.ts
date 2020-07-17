@@ -421,6 +421,22 @@ test('User can extend koa app with a callback', () => {
   expect(app.app).toBe('foo');
 });
 
+test('User can extend koa app and router with a callback', () => {
+  const app = new Bantam();
+  // @ts-expect-error
+  app.app = 'koa';
+  // @ts-expect-error
+  app.router = 'router';
+  // @ts-expect-error
+  app.extend((koa, router) => {
+    koa = 'foo';
+    router = 'bar';
+    return [koa, router];
+  });
+  expect(app.getApp()).toBe('foo');
+  expect(app.getRouter()).toBe('bar');
+});
+
 test('Logs error if app is not ready when requested', () => {
   const mockLoggerError = jest.fn();
   const fakeLogger = { error: mockLoggerError };

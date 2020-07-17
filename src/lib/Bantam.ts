@@ -74,7 +74,7 @@ class Bantam {
 
   private app: Koa;
 
-  readonly router: KoaRouter;
+  private router: KoaRouter;
 
   private config: Config;
 
@@ -340,9 +340,32 @@ class Bantam {
     return this.app;
   }
 
-  extend(callback: (koaApp: Koa) => Koa): Bantam {
+  getRouter(): Koa {
+    if (typeof this.router === 'undefined') {
+      this.logger.error('Koa router has not been defined.');
+    }
+    return this.router;
+  }
+
+  extend(callback: (koaApp: Koa) => Koa): Bantam;
+
+  extend(
+    callback: (koaApp: Koa, koaRouter: KoaRouter) => [Koa, KoaRouter],
+  ): Bantam;
+
+  extend(
+    callback: (koaApp: Koa, koaRouter?: KoaRouter) => Koa | [Koa, KoaRouter],
+  ): Bantam {
     const app = this.getApp();
-    this.app = callback(app);
+    const router = this.getRouter();
+    const extension = callback(app, router);
+    const [extendedApp, extendedRouter] = Array.isArray(extension)
+      ? extension
+      : [extension];
+    this.app = extendedApp;
+    if (typeof extendedRouter !== 'undefined') {
+      this.router = extendedRouter;
+    }
     return this;
   }
 
