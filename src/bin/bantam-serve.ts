@@ -24,7 +24,7 @@ export const runServe = (devMode: boolean): void => {
   } catch (error) {
     writeMsg(
       errorMsg(
-        'Cannot find .bantamrc.js file. Trying running `npx bantam init`',
+        'Cannot find .bantamrc.js file. Trying running `@flmnt/bantam init`',
       ),
       NEW_LINE.AFTER,
     );
