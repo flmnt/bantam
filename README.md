@@ -20,9 +20,9 @@ Our goal with Bantam is reduce the work bootstrapping microservices.
 
 ### Examples
 
-- Domain segregated microservice example
-- Event based microservice example
-- Typescript example with additional middleware
+- [Domain segregated microservice example](https://github.com/flmnt/bantam/tree/master/example/domain)
+- Event based microservice example (coming soon)
+- Typescript example with additional middleware (coming soon)
 
 ### Installation
 

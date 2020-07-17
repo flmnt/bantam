@@ -5,9 +5,13 @@ const app = new Bantam({
 });
 
 if (process.env.NODE_ENV === 'production') {
-  app.run();
+  app.run().then(
+    () => {},
+    () => {},
+  );
 } else {
-  app.run().then((app) => {
-    app.logRoutes();
-  });
+  app.run().then(
+    (app) => app.logRoutes(),
+    () => {},
+  );
 }
