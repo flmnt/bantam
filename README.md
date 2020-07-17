@@ -1,5 +1,7 @@
 # bantam
 
+![](https://github.com/flmnt/bantam/workflows/Build%20Package/badge.svg)
+
 <img src="https://raw.githubusercontent.com/FilamentSolutions/bantam/master/logo/logo.png" alt="Basil the Bantam" width="300">
 
 Bantam is an extensible, ultra lightweight, NodeJS framework for creating RESTful microservices.
