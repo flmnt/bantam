@@ -1,7 +1,5 @@
 # bantam
 
-**COMING SOON:** due to be published July 2020
-
 <img src="https://raw.githubusercontent.com/FilamentSolutions/bantam/master/logo/logo.png" alt="Basil the Bantam" width="300">
 
 Bantam is an extensible, ultra lightweight, NodeJS framework for creating RESTful microservices.
@@ -21,12 +19,26 @@ Features include:
 
 Our goal with Bantam is reduce the work bootstrapping microservices.
 
-Getting started with your first microservice is very simple.
+Getting started with your first microservice is very simple, follow the installation below or check the examples here:
+
+- Domain segregated microservice example
+- Event based microservice example
+- Typescript example with additional middleware
 
 ### Installation
 
+First, install the required packages.
+
+For Typescript:
+
 ```
-% npm install @_filament/bantam
+% npm i @flmnt/bantam ts-node ts-node-dev
+```
+
+Or for Javascript:
+
+```
+% npm i @flmnt/bantam node-dev
 ```
 
 Once you have installed Bantam you can initialise your app; this can be done with either a brand new or existing app.
@@ -51,7 +63,7 @@ Bantam expects the following folder structure:
 In the root level `index.ts` file add the following to run Bantam:
 
 ```
-import Bantam from '@_filament/bantam';
+import Bantam from '@flmnt/bantam';
 
 const app = new Bantam();
 
@@ -139,15 +151,78 @@ After running `npx bantam init` you will have a `.bantamrc.js` file in your dire
 module.exports = {
   actionsFolder: 'actions',
   language: 'typescript',
+  entrypoint: 'index.js',
 };
 ```
 
+The `.bantamrc` file provides configuration options for the CLI. You only need to change it if you switch language, change your main file (entrypoint) or rename your actions folder.
+
 ## Add New Routes
 
-To add a new route (action) you can either create a new file in the actions folder or run this:
+To add a new action (resource) you can either create a new file in the actions folder or use the CLI to make the file for you:
 
 ```
 % npx bantam action index.ts
+```
+
+You can add the standard methods (`fetchAll`, `fetchSingle`, `create`, `update`, `delete`) to an action class which will automatically create the standard routes.
+
+If you'd like to create custom methods for your action class you can create custom getters like this:
+
+```
+// GET -> /custom-method/
+getCustomMethod(ctx) {
+  return ctx.body = 'Custom response';
+}
+```
+
+And custom setters like this:
+
+```
+// POST -> /custom-method/
+setCustomMethod(data, ctx) {
+  console.log(data);
+  return ctx.body = 'Custom response';
+}
+```
+
+Bantam will ignore methods that are not "standard" methods or do not start with `get` or `set`. However if you want to _ensure_ that your method will be ignored you can prefix the method with an underscore, like this:
+
+```
+_myHiddenMethod() {
+  // do something secret
+}
+```
+
+## Creating Responses
+
+Each method in an action file is passed a context (ctx) argument which you use to build a response. You can read the Koa [context API here](https://github.com/koajs/koa/blob/master/docs/api/context.md).
+
+Creating standard responses is very straightforward.
+
+```
+fetchAll(ctx) {
+  ctx.body = 'Your response here';
+}
+```
+
+Changing status code is also simple.
+
+```
+fetchAll(ctx) {
+  ctx.body = 'Your response here';
+  ctx.status = 201;
+}
+```
+
+Adjusting headers requires you to use the `ctx.set()` method.
+
+```
+fetchAll(ctx) {
+  ctx.body = 'Your response here';
+  ctx.status = 201;
+  ctx.set('Cache-Control', 'no-cache');
+}
 ```
 
 ## Configuration Options
@@ -155,7 +230,7 @@ To add a new route (action) you can either create a new file in the actions fold
 For advanced configuration pass an options object when instantiating Bantam.
 
 ```
-import Bantam from '@_filament/bantam';
+import Bantam from '@flmnt/bantam';
 
 const options = {
   port: 80,
@@ -212,7 +287,7 @@ The file extension for action files.
 Bantam has been built on top of [Koa](https://github.com/koajs/koa), to expose the Koa application and extend Bantam's functionality you can do the following:
 
 ```
-import Bantam from '@_filament/bantam';
+import Bantam from '@flmnt/bantam';
 
 const app = new Bantam();
 
@@ -227,6 +302,54 @@ app.extend((koaApp) => {
 });
 
 app.run();
+```
+
+If you need to add middlewear to specific routes, you'll likely want to interact with the Bantam router, which is provided by [Koa Router](https://github.com/ZijianHe/koa-router).
+
+```
+import Bantam from '@flmnt/bantam';
+
+const app = new Bantam();
+
+app.extend((koaApp, koaRouter) => {
+
+  koaApp.use(initMiddlewear());
+
+  koaRouter.use('/url', useMiddlewear());
+
+  return [koaApp, koaRouter];
+});
+
+app.run();
+```
+
+_NB: if you adjust the router as well as the Koa app, make sure your callback returns an array with the app and then the router (in that order)_
+
+## Debugging
+
+If you're struggling to debug and issue and unsure what routes Bantam has created for you, you can use `logRoutes()` to find out.
+
+```
+const app = new Bantam();
+
+app.run().then((app) => {
+  app.logRoutes();
+});
+```
+
+Also check trailing slashes in your urls, these are important.
+
+In the example below the url `test/1` and `test/custom-method` both trigger `fetchSingle()` but the url `test/custom-method/` (with the trailing slash) triggers `getCustomMethod()`.
+
+```
+// actions/test.js
+
+// GET -> test/custom-method
+// GET -> test/:id
+fetchSingle() {}
+
+// GET -> test/custom-method/
+getCustomMethod() {}
 ```
 
 ## Contribution
