@@ -19,7 +19,7 @@ Features include:
 
 Our goal with Bantam is reduce the work bootstrapping microservices.
 
-Getting started with your first microservice is very simple, follow the installation below or check the examples here:
+### Examples
 
 - Domain segregated microservice example
 - Event based microservice example
