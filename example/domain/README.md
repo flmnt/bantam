@@ -85,6 +85,18 @@ class Index {
 }
 ```
 
+Next add a little helper method to create some quick promises:
+
+```
+...
+
+const promisify = (callback) => new Promise((resolve) => callback(resolve));
+
+class Index {
+  ...
+}
+```
+
 Now change the `fetchAll` method to look like this:
 
 ```
