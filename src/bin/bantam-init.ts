@@ -223,7 +223,7 @@ export const runInit = (): void => {
     () => {
       writeMsg(successMsg('Your application is ready!'), NEW_LINE.BOTH);
       writeMsg(
-        `Run ${infoMsg('@flmnt/bantam serve --dev')} to begin...\n`,
+        `Run ${infoMsg('npx @flmnt/bantam serve --dev')} to begin...\n`,
         NEW_LINE.BOTH,
       );
     },

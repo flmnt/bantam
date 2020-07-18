@@ -34,7 +34,7 @@ const action = async (actionFile: string): Promise<string> => {
   } catch (error) {
     writeMsg(
       errorMsg(
-        'Cannot find .bantamrc.js file. Trying running `@flmnt/bantam init`',
+        'Cannot find .bantamrc.js file. Trying running `npx @flmnt/bantam init`',
       ),
       NEW_LINE.AFTER,
     );

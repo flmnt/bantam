@@ -20,6 +20,8 @@ Features include:
 
 Our goal with Bantam is reduce the work bootstrapping microservices.
 
+With Bantam you can create a basic REST API in 5 minutes or less.
+
 ### Examples
 
 - [Domain segregated microservice example](https://github.com/flmnt/bantam/tree/master/example/domain)
