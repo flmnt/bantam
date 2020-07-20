@@ -1,5 +1,5 @@
 {
-  "name": "domain-example",
+  "name": "typescript-example",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -10,9 +10,7 @@
   "license": "UNLICENSED",
   "dependencies": {
     "@flmnt/bantam": "file:../..",
-    "nedb": "^1.8.0"
-  },
-  "devDependencies": {
-    "node-dev": "^5.0.0"
+    "ts-node": "^8.10.2",
+    "ts-node-dev": "^1.0.0-pre.52"
   }
 }

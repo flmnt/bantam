@@ -73,4 +73,4 @@ class Index {
   }
 }
 
-module.exports = Index;
+module.exports.default = Index;
