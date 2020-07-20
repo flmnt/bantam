@@ -85,7 +85,7 @@ class Index {
 }
 ```
 
-Next add a little helper method to create some quick promises:
+Next add a little helper method to create quick promises:
 
 ```
 ...
@@ -113,7 +113,7 @@ Save your file and the server should automatically reload.
 In a new terminal window run this command:
 
 ```
-% curl --request GET 'http://localhost:3000'
+curl --request GET 'http://localhost:3000'
 ```
 
 And you should see the records you created before!
@@ -155,22 +155,22 @@ We can test each method in order with the following CURL commands:
 
 ```
 // fetchSingle
-% curl --request GET 'http://localhost:3000/1
+curl --request GET 'http://localhost:3000/1
 
 // create
-% curl --request POST 'http://localhost:3000' \
+curl --request POST 'http://localhost:3000' \
   --header 'Content-Type: application/x-www-form-urlencoded' \
   --data-urlencode 'firstName=Homer' \
   --data-urlencode 'lastName=Simpson' \
   --data-urlencode 'email=homer@donut.me'
 
 // update
-% curl --request PATCH 'http://localhost:3000/0' \
+curl --request PATCH 'http://localhost:3000/0' \
   --header 'Content-Type: application/x-www-form-urlencoded' \
   --data-urlencode 'lastName=Flanders'
 
 // delete
-% curl --request DELETE 'http://localhost:3000/1'
+curl --request DELETE 'http://localhost:3000/1'
 ```
 
 And we're done! You've created your first microservice for Bantam.

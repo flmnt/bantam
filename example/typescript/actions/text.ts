@@ -1,7 +1,6 @@
-import { Context } from 'koa';
-import { BantamAction } from '@flmnt/bantam';
+import { Action, Context } from '@flmnt/bantam';
 
-class Text implements BantamAction {
+class Text implements Action {
   // TRY THIS: curl --request GET 'http://localhost:3000/text/welcome-message/'
   getWelcomeMessage(ctx: Context): void {
     ctx.body = 'Hello Friend!';

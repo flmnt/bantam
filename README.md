@@ -23,7 +23,7 @@ With Bantam you can create a basic REST API in 5 minutes or less.
 ### Examples
 
 - [Domain segregated example](https://github.com/flmnt/bantam/tree/master/example/domain)
-- Event based example (coming soon)
+- [Event based example](https://github.com/flmnt/bantam/tree/master/example/event)
 - [Typescript example](https://github.com/flmnt/bantam/tree/master/example/typescript)
 
 ### Installation

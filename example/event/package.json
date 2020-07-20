@@ -1,13 +1,14 @@
 {
-  "name": "domain-example",
+  "name": "event",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "keywords": [],
   "author": "Matt Davies <matt@filament.so>",
-  "license": "UNLICENSED",
+  "license": "ISC",
   "dependencies": {
     "@flmnt/bantam": "^0.1.1",
     "nedb": "^1.8.0"
