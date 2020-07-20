@@ -1,13 +1,23 @@
 import fs from 'fs';
 import path from 'path';
 
-import Koa, { Context } from 'koa';
+import Koa, { ExtendableContext, Middleware, Next, Request } from 'koa';
 import KoaRouter from 'koa-router';
 import koaBodyParser from 'koa-bodyparser';
 
 import Logger from './services/Logger';
 
-export interface BantamAction {
+interface BodyRequest extends Request {
+  body?: any;
+  rawBody: string;
+}
+
+export interface Context extends ExtendableContext {
+  params?: { id?: string };
+  request: BodyRequest;
+}
+
+export interface Action {
   fetchAll?: (ctx: Context) => void;
   fetchSingle?: (id: string, ctx: Context) => void;
   create?: (data: any, ctx: Context) => void;
@@ -40,18 +50,18 @@ interface Dependencies {
 
 type HttpVerb = 'get' | 'post' | 'patch' | 'delete';
 
-interface Route {
+interface ActionRoute {
   method: string;
   verb: HttpVerb;
   url: string;
 }
 
-export interface Action {
+interface ActionResource {
   fileName: string;
   pathName: string;
-  actionClass?: Constructor<BantamAction>;
-  actionObj?: BantamAction;
-  routes: Route[];
+  actionClass?: Constructor<Action>;
+  actionObj?: Action;
+  routes: ActionRoute[];
 }
 
 interface MethodsDict {
@@ -78,7 +88,7 @@ class Bantam {
 
   private config: Config;
 
-  private actions: Action[] = [];
+  private actions: ActionResource[] = [];
 
   constructor(userOptions?: UserOptions, deps?: Dependencies) {
     const config = Object.assign(this.defaultConfig, userOptions);
@@ -111,7 +121,7 @@ class Bantam {
     });
   }
 
-  getActions(): Action[] {
+  getActions(): ActionResource[] {
     if (this.actions.length === 0) {
       this.logger.error(
         'You have no loaded actions. Check for files in the actions folder.',
@@ -122,7 +132,7 @@ class Bantam {
 
   logRoutes(): void {
     const actions = this.getActions();
-    const routes: Route[] = [];
+    const routes: ActionRoute[] = [];
     for (const action of actions) {
       for (const route of action.routes) {
         routes.push(route);
@@ -165,12 +175,12 @@ class Bantam {
     this.logger.info(routesToLog.join('\n'));
   }
 
-  async discoverActions(): Promise<Action[]> {
+  async discoverActions(): Promise<ActionResource[]> {
     const actionFiles = await this.readActionsFolder();
-    const actions: Action[] = [];
+    const actions: ActionResource[] = [];
     for (const fileName of actionFiles) {
       const pathName = encodeURI(fileName.replace(/\.[j|t]s/, ''));
-      const action: Action = {
+      const action: ActionResource = {
         fileName: fileName,
         pathName: pathName,
         routes: [],
@@ -181,12 +191,12 @@ class Bantam {
     return actions;
   }
 
-  requireActionFile(fileName: string): Constructor<BantamAction> | null {
+  requireActionFile(fileName: string): Constructor<Action> | null {
     const { actionsFolder } = this.getConfig();
 
     try {
       const ActionClass: {
-        default: Constructor<BantamAction>;
+        default: Constructor<Action>;
         // eslint-disable-next-line
       } = require(path.join(process.cwd(), actionsFolder, fileName));
       return ActionClass.default;
@@ -200,7 +210,7 @@ class Bantam {
     const actions = this.getActions();
 
     const loadedActions = actions.map(
-      (action): Action => {
+      (action): ActionResource => {
         try {
           const ActionClass = this.requireActionFile(action.fileName);
           if (ActionClass !== null) {
@@ -268,12 +278,12 @@ class Bantam {
 
   makeRoutes(
     pathName: string,
-    actionClass?: Constructor<BantamAction>,
-  ): Route[] {
+    actionClass?: Constructor<Action>,
+  ): ActionRoute[] {
     if (typeof actionClass === 'undefined') return [];
 
     const methodsDict = this.introspectMethods(actionClass);
-    const mapToRoute = (verb: HttpVerb) => (method: string): Route => ({
+    const mapToRoute = (verb: HttpVerb) => (method: string): ActionRoute => ({
       method,
       verb,
       url: this.makeUrl(pathName, method),
@@ -285,10 +295,7 @@ class Bantam {
     return [].concat(getRoutes, postRoutes, patchRoutes, deleteRoutes);
   }
 
-  routeToMethod(
-    actionObj: BantamAction,
-    method: string,
-  ): (ctx: Context, next: Promise<any>) => Promise<any> {
+  routeToMethod(actionObj: Action, method: string): Middleware<Context> {
     const CTX_ONLY_RE = /^(get\w*|fetchAll)$/;
     const CTX_ID_RE = /^(fetchSingle|delete)$/;
     const CTX_BODY_RE = /^(set\w*|create)$/;
@@ -299,9 +306,9 @@ class Bantam {
     const isContextBody = CTX_BODY_RE.test(method);
     const isContextIdBody = CTX_ID_BODY_RE.test(method);
 
-    return async (ctx: Context, next?: Promise<any>): Promise<any> => {
+    return async (ctx: Context, next?: Next): Promise<any> => {
       const id = ctx.params.id;
-      // @ts-expect-error
+
       const body = ctx.request.body;
 
       const args = [];
@@ -361,7 +368,7 @@ class Bantam {
     return this.app;
   }
 
-  getRouter(): Koa {
+  getRouter(): KoaRouter {
     if (typeof this.router === 'undefined') {
       this.logger.error('Koa router has not been defined.');
     }

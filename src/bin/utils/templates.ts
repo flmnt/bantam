@@ -91,10 +91,9 @@ module.exports = ${className};
 
 export const tsActionTemplate = (
   className: string,
-): string => `import { Context } from 'koa';
-import { BantamAction } from '@flmnt/bantam';
+): string => `import { Action, Context } from '@flmnt/bantam';
 
-class ${className} implements BantamAction {
+class ${className} implements Action {
   fetchAll(ctx: Context): void {
     ctx.body = 'Bantam: ${className} -> fetchAll()';
   }

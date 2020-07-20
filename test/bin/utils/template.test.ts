@@ -80,10 +80,9 @@ module.exports = ${className};
 test('TS action template returns correct template', () => {
   const className = 'Test';
   const template = tsActionTemplate(className);
-  expect(template).toBe(`import { Context } from 'koa';
-import { BantamAction } from '@flmnt/bantam';
+  expect(template).toBe(`import { Action, Context } from '@flmnt/bantam';
 
-class ${className} implements BantamAction {
+class ${className} implements Action {
   fetchAll(ctx: Context): void {
     ctx.body = 'Bantam: Test -> fetchAll()';
   }

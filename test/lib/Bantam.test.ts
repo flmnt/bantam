@@ -2,7 +2,7 @@ import fs from 'fs';
 import sinon from 'sinon';
 import { Context } from 'koa';
 
-import Bantam, { BantamAction } from '../../src/lib/Bantam';
+import Bantam, { Action } from '../../src/lib/Bantam';
 
 afterEach(() => {
   sinon.restore();
@@ -91,7 +91,7 @@ test('Logs error if no routes have been set', () => {
   );
 });
 
-class MockAction implements BantamAction {
+class MockAction implements Action {
   fetchAll(ctx: Context): void {}
   fetchSingle(id: string, ctx: Context): void {}
   create(data: any, ctx: Context): void {}
@@ -385,7 +385,7 @@ test('Log error if no methods are found for an action', () => {
   );
 });
 
-class MockSmallAction implements BantamAction {
+class MockSmallAction implements Action {
   fetchAll(ctx: Context): void {}
   fetchSingle(id: string, ctx: Context): void {}
 }
