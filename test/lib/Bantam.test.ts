@@ -142,8 +142,8 @@ test('Discover actions turns filenames into filename and path', async () => {
   readActionsFolderStub.returns(['index.js', 'auth.js']);
   const actions = await app.discoverActions();
   expect(actions).toStrictEqual([
-    { fileName: 'index.js', pathName: 'index' },
-    { fileName: 'auth.js', pathName: 'auth' },
+    { fileName: 'index.js', pathName: 'index', routes: [] },
+    { fileName: 'auth.js', pathName: 'auth', routes: [] },
   ]);
 });
 
@@ -173,12 +173,14 @@ test('Can load actions', async () => {
       actionObj: new MockAction(),
       fileName: 'index.js',
       pathName: 'index',
+      routes: [],
     },
     {
       actionClass: MockAction,
       actionObj: new MockAction(),
       fileName: 'auth.js',
       pathName: 'auth',
+      routes: [],
     },
   ]);
 });
