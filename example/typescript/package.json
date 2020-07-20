@@ -9,7 +9,7 @@
   "author": "Matt Davies <matt@filament.so>",
   "license": "UNLICENSED",
   "dependencies": {
-    "@flmnt/bantam": "file:../..",
+    "@flmnt/bantam": "^0.1.0",
     "ts-node": "^8.10.2",
     "ts-node-dev": "^1.0.0-pre.52"
   }

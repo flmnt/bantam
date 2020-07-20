@@ -9,7 +9,7 @@
   "author": "Matt Davies <matt@filament.so>",
   "license": "UNLICENSED",
   "dependencies": {
-    "@flmnt/bantam": "file:../..",
+    "@flmnt/bantam": "^0.1.0",
     "nedb": "^1.8.0"
   },
   "devDependencies": {
