@@ -36,6 +36,7 @@ export const runServe = (devMode: boolean): void => {
   }
 
   let engine: string = '';
+  const opts: string[] = [];
 
   if (config.language === 'javascript') {
     engine = devMode
@@ -47,6 +48,7 @@ export const runServe = (devMode: boolean): void => {
     engine = devMode
       ? path.resolve(process.cwd(), './node_modules/.bin/ts-node-dev')
       : path.resolve(process.cwd(), './node_modules/.bin/ts-node');
+    opts.push('--compiler-options', '{"esModuleInterop":true}');
   }
 
   if (engine === '') {
@@ -76,7 +78,7 @@ export const runServe = (devMode: boolean): void => {
     if (engine === 'node') {
       serve = spawn('node', [config.entrypoint], { env });
     } else {
-      serve = spawn('node', [engine, config.entrypoint], { env });
+      serve = spawn('node', [engine, ...opts, config.entrypoint], { env });
     }
 
     serve.stdout.on('data', (data: string): void => {

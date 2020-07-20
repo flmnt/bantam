@@ -269,7 +269,10 @@ test('Can route to fetchAll method with context only', () => {
   const ctx = { params: { id: 0 }, request: { body: 'test' } };
   const method = app.routeToMethod(fakeAction, 'fetchAll');
   // @ts-expect-error
-  method(ctx);
+  method(ctx).then(
+    () => {},
+    () => {},
+  );
   expect(mockMethod).toHaveBeenCalledWith(ctx, undefined);
 });
 
@@ -280,7 +283,10 @@ test('Can route to custom get method with context only', () => {
   const ctx = { params: { id: 0 }, request: { body: 'test' } };
   const method = app.routeToMethod(fakeAction, 'getCustomMethod');
   // @ts-expect-error
-  method(ctx);
+  method(ctx).then(
+    () => {},
+    () => {},
+  );
   expect(mockMethod).toHaveBeenCalledWith(ctx, undefined);
 });
 
@@ -291,7 +297,10 @@ test('Can route to fetchSingle method with id and context', () => {
   const ctx = { params: { id: 0 }, request: { body: 'test' } };
   const method = app.routeToMethod(fakeAction, 'fetchSingle');
   // @ts-expect-error
-  method(ctx);
+  method(ctx).then(
+    () => {},
+    () => {},
+  );
   expect(mockMethod).toHaveBeenCalledWith(0, ctx, undefined);
 });
 
@@ -302,7 +311,10 @@ test('Can route to delete method with id and context', () => {
   const ctx = { params: { id: 0 }, request: { body: 'test' } };
   const method = app.routeToMethod(fakeAction, 'delete');
   // @ts-expect-error
-  method(ctx);
+  method(ctx).then(
+    () => {},
+    () => {},
+  );
   expect(mockMethod).toHaveBeenCalledWith(0, ctx, undefined);
 });
 
@@ -313,7 +325,10 @@ test('Can route to create method with body and context', () => {
   const ctx = { params: { id: 0 }, request: { body: 'test' } };
   const method = app.routeToMethod(fakeAction, 'create');
   // @ts-expect-error
-  method(ctx);
+  method(ctx).then(
+    () => {},
+    () => {},
+  );
   expect(mockMethod).toHaveBeenCalledWith('test', ctx, undefined);
 });
 
@@ -324,7 +339,10 @@ test('Can route to custom set method with body and context', () => {
   const ctx = { params: { id: 0 }, request: { body: 'test' } };
   const method = app.routeToMethod(fakeAction, 'setCustomMethod');
   // @ts-expect-error
-  method(ctx);
+  method(ctx).then(
+    () => {},
+    () => {},
+  );
   expect(mockMethod).toHaveBeenCalledWith('test', ctx, undefined);
 });
 
@@ -335,7 +353,10 @@ test('Can route to update method with id, body and context', () => {
   const ctx = { params: { id: 0 }, request: { body: 'test' } };
   const method = app.routeToMethod(fakeAction, 'update');
   // @ts-expect-error
-  method(ctx);
+  method(ctx).then(
+    () => {},
+    () => {},
+  );
   expect(mockMethod).toHaveBeenCalledWith(0, 'test', ctx, undefined);
 });
 

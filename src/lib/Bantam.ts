@@ -51,7 +51,7 @@ export interface Action {
   pathName: string;
   actionClass?: Constructor<BantamAction>;
   actionObj?: BantamAction;
-  routes?: Route[];
+  routes: Route[];
 }
 
 interface MethodsDict {
@@ -129,6 +129,11 @@ class Bantam {
       }
     }
 
+    if (routes.length === 0) {
+      this.logger.info('No available routes!');
+      return;
+    }
+
     const routesToLog: string[] = [];
     routesToLog.push('Available Routes:\n');
 
@@ -168,6 +173,7 @@ class Bantam {
       const action: Action = {
         fileName: fileName,
         pathName: pathName,
+        routes: [],
       };
       actions.push(action);
     }
@@ -179,15 +185,14 @@ class Bantam {
     const { actionsFolder } = this.getConfig();
 
     try {
-      // eslint-disable-next-line
-      const ActionClass: Constructor<BantamAction> = require(path.join(
-        process.cwd(),
-        actionsFolder,
-        fileName,
-      ));
-      return ActionClass;
+      const ActionClass: {
+        default: Constructor<BantamAction>;
+        // eslint-disable-next-line
+      } = require(path.join(process.cwd(), actionsFolder, fileName));
+      return ActionClass.default;
     } catch (error) {
       this.logger.error(`Unable to load \`${fileName}\` action file.`);
+      return null;
     }
   }
 
@@ -196,12 +201,19 @@ class Bantam {
 
     const loadedActions = actions.map(
       (action): Action => {
-        const ActionClass = this.requireActionFile(action.fileName);
-        if (ActionClass !== null) {
-          action.actionClass = ActionClass;
-          action.actionObj = new ActionClass();
-          return action;
+        try {
+          const ActionClass = this.requireActionFile(action.fileName);
+          if (ActionClass !== null) {
+            action.actionClass = ActionClass;
+            // @TODO: fix error with instantiating ActionClass
+            action.actionObj = new ActionClass();
+          }
+        } catch (error) {
+          this.logger.error(
+            `Unable to instantiate \`${action.fileName}\` action class.`,
+          );
         }
+        return action;
       },
     );
 
@@ -310,26 +322,32 @@ class Bantam {
     const actions = this.getActions();
 
     for (const action of actions) {
-      const { pathName, actionClass, actionObj } = action;
-      const routes = this.makeRoutes(pathName, actionClass);
-      action.routes = routes;
+      try {
+        const { pathName, actionClass, actionObj } = action;
+        const routes = this.makeRoutes(pathName, actionClass);
+        action.routes = routes;
 
-      if (routes.length === 0) {
-        this.logger.error(`No methods found for \`${pathName}\` action.`);
-        continue;
-      }
-
-      for (const { method, verb, url } of routes) {
-        try {
-          router[verb](url, this.routeToMethod(actionObj, method));
-          // routeToMethod is a bit obtuse, but it prevents
-          // slow RegEx queries being run every request
-          // effectively results in router[verb](url, (ctx) => action[method](...args));
-        } catch (error) {
-          this.logger.error(
-            `Unable to bind method \`${method}\` from \`${pathName}\` action to route.`,
-          );
+        if (routes.length === 0) {
+          this.logger.error(`No methods found for \`${pathName}\` action.`);
+          continue;
         }
+
+        for (const { method, verb, url } of routes) {
+          try {
+            router[verb](url, this.routeToMethod(actionObj, method));
+            // routeToMethod is a bit obtuse, but it prevents
+            // slow RegEx queries being run every request
+            // effectively results in router[verb](url, (ctx) => action[method](...args));
+          } catch (error) {
+            this.logger.error(
+              `Unable to bind method \`${method}\` from \`${pathName}\` action to route.`,
+            );
+          }
+        }
+      } catch (error) {
+        this.logger.error(
+          `Unable to bind \`${action.pathName}\` action methods to route.`,
+        );
       }
     }
 
