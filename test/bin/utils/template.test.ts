@@ -73,7 +73,7 @@ test('JS action template returns correct template', () => {
   }
 }
 
-module.exports = ${className};
+module.exports.default = ${className};
 `);
 });
 

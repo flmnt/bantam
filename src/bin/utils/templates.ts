@@ -86,7 +86,7 @@ export const jsActionTemplate = (
   }
 }
 
-module.exports = ${className};
+module.exports.default = ${className};
 `;
 
 export const tsActionTemplate = (
