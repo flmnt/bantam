@@ -91,16 +91,25 @@ test('Logs error if no routes have been set', () => {
   );
 });
 
+/* eslint-disable jsdoc/require-jsdoc */
 class MockAction implements Action {
   fetchAll(ctx: Context): void {}
+
   fetchSingle(id: string, ctx: Context): void {}
+
   create(data: any, ctx: Context): void {}
+
   update(id: string, data: any, ctx: Context): void {}
+
   delete(id: string): void {}
+
   getCustom(ctx: Context): void {}
+
   setCustom(data: any, ctx: Context): void {}
+
   private _privateMethod(): void {}
 }
+/* eslint-enable */
 
 test('Can log routes', () => {
   const actionObject = new MockAction();
@@ -386,7 +395,13 @@ test('Log error if no methods are found for an action', () => {
 });
 
 class MockSmallAction implements Action {
+  /**
+   *
+   */
   fetchAll(ctx: Context): void {}
+  /**
+   *
+   */
   fetchSingle(id: string, ctx: Context): void {}
 }
 

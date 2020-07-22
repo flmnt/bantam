@@ -98,14 +98,17 @@ class Bantam {
     this.router = new KoaRouter();
   }
 
+  /** Get Bantam app config */
   getConfig(): Config {
     return this.config;
   }
 
+  /** Set Bantam app config */
   setConfig(config: Config): void {
     this.config = config;
   }
 
+  /** Read action files from actions folder */
   async readActionsFolder(): Promise<string[]> {
     const { actionsFolder } = this.getConfig();
     return new Promise((resolve) => {
@@ -121,6 +124,7 @@ class Bantam {
     });
   }
 
+  /** Get Bantam actions */
   getActions(): ActionResource[] {
     if (this.actions.length === 0) {
       this.logger.error(
@@ -130,6 +134,7 @@ class Bantam {
     return this.actions;
   }
 
+  /** Print Bantam routes in human readable format */
   logRoutes(): void {
     const actions = this.getActions();
     const routes: ActionRoute[] = [];
@@ -175,6 +180,7 @@ class Bantam {
     this.logger.info(routesToLog.join('\n'));
   }
 
+  /** Parse methods from action files */
   async discoverActions(): Promise<ActionResource[]> {
     const actionFiles = await this.readActionsFolder();
     const actions: ActionResource[] = [];
@@ -191,6 +197,7 @@ class Bantam {
     return actions;
   }
 
+  /** Load an action file */
   requireActionFile(fileName: string): Constructor<Action> | null {
     const { actionsFolder } = this.getConfig();
 
@@ -206,6 +213,7 @@ class Bantam {
     }
   }
 
+  /** Import and instantiate action classes */
   loadActions(): void {
     const actions = this.getActions();
 
@@ -215,7 +223,6 @@ class Bantam {
           const ActionClass = this.requireActionFile(action.fileName);
           if (ActionClass !== null) {
             action.actionClass = ActionClass;
-            // @TODO: fix error with instantiating ActionClass
             action.actionObj = new ActionClass();
           }
         } catch (error) {
@@ -230,6 +237,7 @@ class Bantam {
     this.actions = loadedActions;
   }
 
+  /** Map action class methods to method dictionary */
   introspectMethods(actionClass: any): MethodsDict {
     const keys = Reflect.ownKeys(actionClass.prototype);
     const methodsDict: MethodsDict = {
@@ -256,6 +264,7 @@ class Bantam {
     return methodsDict;
   }
 
+  /** Create URL for action routes */
   makeUrl(pathName: string, method: string): string {
     const { actionsIndexFile } = this.getConfig();
     let url = actionsIndexFile === pathName ? '/' : `/${pathName}/`;
@@ -276,6 +285,7 @@ class Bantam {
     return url;
   }
 
+  /** Create action routes with method, verb, and URL */
   makeRoutes(
     pathName: string,
     actionClass?: Constructor<Action>,
@@ -295,6 +305,7 @@ class Bantam {
     return [].concat(getRoutes, postRoutes, patchRoutes, deleteRoutes);
   }
 
+  /** Allow router to call action class method */
   routeToMethod(actionObj: Action, method: string): Middleware<Context> {
     const CTX_ONLY_RE = /^(get\w*|fetchAll)$/;
     const CTX_ID_RE = /^(fetchSingle|delete)$/;
@@ -323,6 +334,7 @@ class Bantam {
     };
   }
 
+  /** Bind action methods to router */
   bindRoutes(): void {
     const router = this.router;
 
@@ -361,6 +373,7 @@ class Bantam {
     this.actions = actions;
   }
 
+  /** Get underlying Koa application */
   getApp(): Koa {
     if (typeof this.app === 'undefined') {
       this.logger.error('Koa application has not been initialised.');
@@ -368,6 +381,7 @@ class Bantam {
     return this.app;
   }
 
+  /** Get underlying Koa router */
   getRouter(): KoaRouter {
     if (typeof this.router === 'undefined') {
       this.logger.error('Koa router has not been defined.');
@@ -381,6 +395,7 @@ class Bantam {
     callback: (koaApp: Koa, koaRouter: KoaRouter) => [Koa, KoaRouter],
   ): Bantam;
 
+  /** Extend Koa application and/or router */
   extend(
     callback: (koaApp: Koa, koaRouter?: KoaRouter) => Koa | [Koa, KoaRouter],
   ): Bantam {
@@ -397,6 +412,7 @@ class Bantam {
     return this;
   }
 
+  /** Run Bantam application */
   async run(): Promise<Bantam> {
     const app = this.getApp();
 
