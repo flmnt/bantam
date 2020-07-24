@@ -409,16 +409,12 @@ test('Log error if no methods are found for an action', () => {
   );
 });
 
+/* eslint-disable jsdoc/require-jsdoc */
 class MockSmallAction implements Action {
-  /**
-   *
-   */
   fetchAll(ctx: Context): void {}
-  /**
-   *
-   */
   fetchSingle(id: string, ctx: Context): void {}
 }
+/* eslint-enable */
 
 test('Log error if no methods are found for an action', () => {
   const mockLoggerError = jest.fn();
@@ -508,6 +504,19 @@ test('Logs error if app is not ready when requested', () => {
   app.getApp();
   expect(mockLoggerError).toHaveBeenCalledWith(
     'Koa application has not been initialised.',
+  );
+});
+
+test('Logs error if router is not ready when requested', () => {
+  const mockLoggerError = jest.fn();
+  const fakeLogger = { error: mockLoggerError };
+  // @ts-expect-error
+  const app = new Bantam(undefined, { logger: fakeLogger });
+  // @ts-expect-error
+  app.router = undefined;
+  app.getRouter();
+  expect(mockLoggerError).toHaveBeenCalledWith(
+    'Koa router has not been defined.',
   );
 });
 
