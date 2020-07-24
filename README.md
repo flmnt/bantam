@@ -35,7 +35,8 @@ First, install the required packages.
 For Typescript:
 
 ```
-% npm i @flmnt/bantam ts-node ts-node-dev typescript @types/node @types/koa @types/koa-bodyparser @types/koa-router
+% npm i @flmnt/bantam ts-node ts-node-dev typescript
+% npm i @types/node @types/koa @types/koa-bodyparser @types/koa-router
 ```
 
 Or for Javascript:
