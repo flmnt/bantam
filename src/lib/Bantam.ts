@@ -119,7 +119,8 @@ class Bantam {
           );
           return resolve([]);
         }
-        resolve(files);
+        const filteredFiles = files.filter((file) => /\.[j|t]s/.test(file));
+        resolve(filteredFiles);
       });
     });
   }
@@ -137,11 +138,10 @@ class Bantam {
   /** Print Bantam routes in human readable format */
   logRoutes(): void {
     const actions = this.getActions();
-    const routes: ActionRoute[] = [];
+
+    let routes: ActionRoute[] = [];
     for (const action of actions) {
-      for (const route of action.routes) {
-        routes.push(route);
-      }
+      routes = routes.concat(action.routes);
     }
 
     if (routes.length === 0) {
@@ -185,7 +185,7 @@ class Bantam {
     const actionFiles = await this.readActionsFolder();
     const actions: ActionResource[] = [];
     for (const fileName of actionFiles) {
-      const pathName = encodeURI(fileName.replace(/\.[j|t]s/, ''));
+      const pathName = fileName.replace(/\.[j|t]s/, '');
       const action: ActionResource = {
         fileName: fileName,
         pathName: pathName,
@@ -199,9 +199,8 @@ class Bantam {
 
   /** Load an action file */
   requireActionFile(fileName: string): Constructor<Action> | null {
-    const { actionsFolder } = this.getConfig();
-
     try {
+      const { actionsFolder } = this.getConfig();
       const ActionClass: {
         default: Constructor<Action>;
         // eslint-disable-next-line

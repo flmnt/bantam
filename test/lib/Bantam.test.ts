@@ -50,13 +50,26 @@ test('Can instantiate with all user options', (): void => {
   });
 });
 
+test('Can set config programmatically', () => {
+  const app = new Bantam();
+  const config = app.getConfig();
+  config.port = 80;
+  app.setConfig(config);
+  expect(app.getConfig()).toStrictEqual({
+    port: 80,
+    devPort: 3000,
+    actionsFolder: 'actions',
+    actionsIndexFile: 'index',
+    actionsFileExt: '.ts',
+  });
+});
+
 test('Can read file names in actions folder', async () => {
-  const files = ['index.ts', 'other.ts', 'test.ts'];
   const app = new Bantam();
   const readdirStub = sinon.stub(fs, 'readdir');
-  readdirStub.yields(null, files);
+  readdirStub.yields(null, ['index.ts', 'other.ts', 'test.ts', 'random.txt']);
   const actions = await app.readActionsFolder();
-  expect(actions).toBe(files);
+  expect(actions).toStrictEqual(['index.ts', 'other.ts', 'test.ts']);
 });
 
 test('Logs error if actions folder cannot be read', async () => {
@@ -148,11 +161,11 @@ GET    -> /:id -> index.js -> fetchSingle`);
 test('Discover actions turns filenames into filename and path', async () => {
   const app = new Bantam();
   const readActionsFolderStub = sinon.stub(app, 'readActionsFolder');
-  readActionsFolderStub.returns(['index.js', 'auth.js']);
+  readActionsFolderStub.returns(['index.js', 'auth-test.js']);
   const actions = await app.discoverActions();
   expect(actions).toStrictEqual([
     { fileName: 'index.js', pathName: 'index', routes: [] },
-    { fileName: 'auth.js', pathName: 'auth', routes: [] },
+    { fileName: 'auth-test.js', pathName: 'auth-test', routes: [] },
   ]);
 });
 
@@ -216,11 +229,13 @@ test('Can make default routes urls', () => {
 
 test('Can make custom resource route urls', () => {
   const app = new Bantam();
-  expect(app.makeUrl('user', 'fetchAll')).toBe('/user/');
-  expect(app.makeUrl('user', 'fetchSingle')).toBe('/user/:id');
-  expect(app.makeUrl('user', 'create')).toBe('/user/');
-  expect(app.makeUrl('user', 'update')).toBe('/user/:id');
-  expect(app.makeUrl('user', 'delete')).toBe('/user/:id');
+  expect(app.makeUrl('custom-action', 'fetchAll')).toBe('/custom-action/');
+  expect(app.makeUrl('custom-action', 'fetchSingle')).toBe(
+    '/custom-action/:id',
+  );
+  expect(app.makeUrl('custom-action', 'create')).toBe('/custom-action/');
+  expect(app.makeUrl('custom-action', 'update')).toBe('/custom-action/:id');
+  expect(app.makeUrl('custom-action', 'delete')).toBe('/custom-action/:id');
 });
 
 test('Can make custom method urls', () => {

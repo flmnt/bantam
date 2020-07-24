@@ -14,6 +14,8 @@ Features include:
 - expressive logging (decent error reporting!)
 - live reloading in developer mode
 
+Need to build a Python microservice? [Check out Pantam](https://github.com/flmnt/pantam)
+
 ## Getting started
 
 Our goal with Bantam is reduce the work bootstrapping microservices.
@@ -33,7 +35,7 @@ First, install the required packages.
 For Typescript:
 
 ```
-% npm i @flmnt/bantam ts-node ts-node-dev
+% npm i @flmnt/bantam ts-node ts-node-dev typescript @types/node
 ```
 
 Or for Javascript:
