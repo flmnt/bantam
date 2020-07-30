@@ -12,22 +12,15 @@ export enum NEW_LINE {
 }
 
 export const writeMsg = (message: string, spacing?: NEW_LINE): void => {
-  let str;
-  switch (spacing) {
-    case NEW_LINE.BEFORE:
-      str = `\n${message}`;
-      break;
-    case NEW_LINE.AFTER:
-      str = `${message}\n`;
-      break;
-    case NEW_LINE.BOTH:
-      str = `\n${message}\n`;
-      break;
-    default:
-      str = message;
-      break;
+  let prefix: string = '';
+  let suffix: string = '';
+  if (spacing === NEW_LINE.BEFORE || spacing === NEW_LINE.BOTH) {
+    prefix = '\n';
   }
-  process.stdout.write(str);
+  if (spacing === NEW_LINE.AFTER || spacing === NEW_LINE.BOTH) {
+    suffix = '\n';
+  }
+  process.stdout.write(`${prefix}${message}${suffix}`);
 };
 
 export const writeError = (message: string): void => {

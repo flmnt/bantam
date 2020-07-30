@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import { spawn, ChildProcessWithoutNullStreams } from 'child_process';
+import { clear } from 'console';
 import fs from 'fs';
 import path from 'path';
 
@@ -15,6 +16,8 @@ import {
 import { CliOptions } from './bantam-init';
 
 export const runServe = (devMode: boolean): void => {
+  clear();
+
   let config: CliOptions;
 
   try {

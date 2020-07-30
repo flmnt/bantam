@@ -116,11 +116,11 @@ const init = async (): Promise<void> => {
         type: 'confirm',
         name: 'createActionsFile',
         message: createActionsFileMsg(true),
-        default: true,
+        default: false,
       },
     ]);
 
-    if (!actionFiles.includes(actionsFile) && actionsFile.length > 0) {
+    if (!actionFiles.includes(actionsFile)) {
       actionFiles.push(actionsFile);
     }
     doCreateActionFiles = createActionsFile;

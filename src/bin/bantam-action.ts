@@ -22,7 +22,7 @@ import { CliOptions } from './bantam-init';
 // Create a new action route
 //
 
-const action = async (actionFile: string): Promise<string> => {
+const action = async (actionFile: string): Promise<void> => {
   clear();
 
   let config: CliOptions;
@@ -32,11 +32,10 @@ const action = async (actionFile: string): Promise<string> => {
     const options = require(path.resolve(process.cwd(), './.bantamrc.js'));
     config = options;
   } catch (error) {
-    writeMsg(
+    writeError(
       errorMsg(
         'Cannot find .bantamrc.js file. Trying running `npx @flmnt/bantam init`',
       ),
-      NEW_LINE.AFTER,
     );
     process.exit(1);
   }
@@ -63,15 +62,13 @@ const action = async (actionFile: string): Promise<string> => {
       throw error;
     }
   }
-
-  return actionFile;
 };
 
 export const runAction = (actionFile: string): void => {
   action(actionFile).then(
-    (newAction: string) => {
+    () => {
       writeMsg(
-        successMsg(`Your new action \`${newAction}\` is ready!`),
+        successMsg(`Your new action \`${actionFile}\` is ready!`),
         NEW_LINE.BOTH,
       );
     },

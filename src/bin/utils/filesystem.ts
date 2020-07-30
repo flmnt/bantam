@@ -23,9 +23,9 @@ export const createFile = async (
     );
   });
 
-export const createFolder = async (filePath: string): Promise<void> =>
+export const createFolder = async (folderPath: string): Promise<void> =>
   new Promise((resolve, reject) => {
-    fs.mkdir(path.resolve(process.cwd(), filePath), (error) => {
+    fs.mkdir(path.resolve(process.cwd(), folderPath), (error) => {
       if (error instanceof Error) {
         reject(error.code === 'EEXIST' ? new FileExistsError() : error);
       }
