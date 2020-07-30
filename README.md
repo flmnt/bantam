@@ -1,6 +1,6 @@
 # bantam
 
-<img src="https://raw.githubusercontent.com/FilamentSolutions/bantam/master/logo/logo.png" alt="Basil the Bantam" width="300">
+<img src="https://raw.githubusercontent.com/flmnt/bantam/master/logo/logo.png" alt="Basil the Bantam" width="300">
 
 Bantam is an extensible, ultra lightweight, NodeJS framework for creating RESTful microservices.
 
@@ -81,15 +81,15 @@ In the `actions` folder create the following files.
 ```
 class Index {
 
-  fetchAll: () => { ... },
+  fetchAll: (ctx) => { ... },
 
-  fetchSingle: (id) => { ... },
+  fetchSingle: (id, ctx) => { ... },
 
   create: (data, ctx) => { ... },
 
   update: (id, data, ctx) => { ... },
 
-  delete: (id) => { ... },
+  delete: (id, ctx) => { ... },
 
 }
 ```
@@ -99,7 +99,7 @@ class Index {
 ```
 class Other {
 
-  fetchSingle: (id) => { ... },
+  fetchSingle: (id, ctx) => { ... },
 
   create: (data, ctx) => { ... },
 
@@ -375,10 +375,10 @@ getCustomMethod() {}
 
 We welcome feedback, suggestions and contributions.
 
-If you have an idea you want to discuss please [open an issue](https://github.com/FilamentSolutions/bantam/issues/new).
+If you have an idea you want to discuss please [open an issue](https://github.com/flmnt/bantam/issues/new).
 
 ## Licenses
 
-Free for personal and commerical use under the [MIT License](https://github.com/FilamentSolutions/bantam/blob/master/LICENSE.md)
+Free for personal and commerical use under the [MIT License](https://github.com/flmnt/bantam/blob/master/LICENSE.md)
 
 _Basil the Bantam_ was created with a free vector from [Vectorportal.com](https://vectorportal.com)
