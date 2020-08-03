@@ -173,4 +173,4 @@ curl --request PATCH 'http://localhost:3000/0' \
 curl --request DELETE 'http://localhost:3000/1'
 ```
 
-And we're done! You've created your first microservice for Bantam.
+And we're done! You've created your first microservice using Bantam.
