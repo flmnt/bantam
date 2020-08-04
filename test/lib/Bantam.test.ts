@@ -120,6 +120,8 @@ class MockAction implements Action {
 
   setCustom(data: any, ctx: Context): void {}
 
+  doCustom(id: string, data: any, ctx: Context): void {}
+
   private _privateMethod(): void {}
 }
 /* eslint-enable */
@@ -212,7 +214,7 @@ test('Find action methods through introspection', () => {
   const methods = app.introspectMethods(MockAction);
   expect(methods).toStrictEqual({
     get: ['fetchAll', 'fetchSingle', 'getCustom'],
-    post: ['create', 'setCustom'],
+    post: ['create', 'setCustom', 'doCustom'],
     patch: ['update'],
     delete: ['delete'],
   });
@@ -244,6 +246,9 @@ test('Can make custom method urls', () => {
   expect(app.makeUrl('foo', 'setYourMagicMethod')).toBe(
     '/foo/your-magic-method/',
   );
+  expect(app.makeUrl('index', 'doMyCustomMethod')).toBe(
+    '/my-custom-method/:id',
+  );
 });
 
 test('Can make route objects from actionClass', () => {
@@ -273,6 +278,11 @@ test('Can make route objects from actionClass', () => {
     {
       method: 'setCustom',
       url: '/custom/',
+      verb: 'post',
+    },
+    {
+      method: 'doCustom',
+      url: '/custom/:id',
       verb: 'post',
     },
     {

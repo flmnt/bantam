@@ -246,7 +246,7 @@ class Bantam {
       delete: [],
     };
     const GET_METHOD_RE = /^(get\w*|fetchAll|fetchSingle)$/;
-    const POST_METHOD_RE = /^(set\w*|create)$/;
+    const POST_METHOD_RE = /^(set\w*|do\w*|create)$/;
     const PATCH_METHOD_RE = /^update$/;
     const DELETE_METHOD_RE = /^delete$/;
     for (const key of keys) {
@@ -267,19 +267,19 @@ class Bantam {
   makeUrl(pathName: string, method: string): string {
     const { actionsIndexFile } = this.getConfig();
     let url = actionsIndexFile === pathName ? '/' : `/${pathName}/`;
-    const INDI_RES_RE = /^(fetchSingle|update|delete)$/;
-    const isIndividualResource = INDI_RES_RE.test(method);
-    if (isIndividualResource) {
-      url = `${url}:id`;
-    }
-    const CUSTOM_METHOD_RE = /^[g|s]et\w*$/;
+    const CUSTOM_METHOD_RE = /^(get|set|do)\w*$/;
     const isCustomMethod = CUSTOM_METHOD_RE.test(method);
     if (isCustomMethod) {
       const slug = method
-        .replace(/^[g|s]et/, '')
+        .replace(/^get|set|do/, '')
         .replace(/(?!^)([A-Z])/g, '-$1')
         .toLowerCase();
       url = `${url}${slug}/`;
+    }
+    const INDI_RES_RE = /^(fetchSingle|update|delete|do\w*)$/;
+    const isIndividualResource = INDI_RES_RE.test(method);
+    if (isIndividualResource) {
+      url = `${url}:id`;
     }
     return url;
   }
@@ -309,7 +309,7 @@ class Bantam {
     const CTX_ONLY_RE = /^(get\w*|fetchAll)$/;
     const CTX_ID_RE = /^(fetchSingle|delete)$/;
     const CTX_BODY_RE = /^(set\w*|create)$/;
-    const CTX_ID_BODY_RE = /^update$/;
+    const CTX_ID_BODY_RE = /^update|do\w*$/;
 
     const isContextOnly = CTX_ONLY_RE.test(method);
     const isContextId = CTX_ID_RE.test(method);
