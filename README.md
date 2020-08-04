@@ -196,11 +196,13 @@ setCustomMethod(data, ctx) {
 
 From version 0.2.0 onwards you can also create a `do` method, which is a custom post method that also expects an identifier as part of the url.
 
+```
 // POST -> /custom-method/{id}
 doCustomMethod(id, data, ctx) {
-console.log(id, data);
-return ctx.body = 'Custom response';
+  console.log(id, data);
+  return ctx.body = 'Custom response';
 }
+```
 
 Bantam will ignore methods that are not "standard" methods or do not start with `get` or `set`. However if you want to _ensure_ that your method will be ignored you can prefix the method with an underscore, like this:
 
