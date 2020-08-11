@@ -1,6 +1,6 @@
 {
   "name": "@flmnt/bantam",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "A micro framework for micro services",
   "engines": {
     "node": ">=12.18.2",
