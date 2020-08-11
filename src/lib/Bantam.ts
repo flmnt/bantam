@@ -12,10 +12,12 @@ interface BodyRequest extends Request {
   rawBody: string;
 }
 
-export interface Context extends ExtendableContext {
+export interface BantamContext extends ExtendableContext {
   params?: { id?: string };
   request: BodyRequest;
 }
+
+export type Context<T = {}> = BantamContext & T;
 
 export interface Action {
   fetchAll?: (ctx: Context) => void;
