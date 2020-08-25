@@ -69,7 +69,7 @@ test('Can read file names in actions folder', async () => {
   const readdirStub = sinon.stub(fs, 'readdir');
   readdirStub.yields(null, ['index.ts', 'other.ts', 'test.ts', 'random.txt']);
   const actions = await app.readActionsFolder();
-  expect(actions).toStrictEqual(['index.ts', 'other.ts', 'test.ts']);
+  expect(actions).toStrictEqual(['other.ts', 'test.ts', 'index.ts']);
 });
 
 test('Logs error if actions folder cannot be read', async () => {

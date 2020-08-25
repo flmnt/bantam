@@ -112,7 +112,11 @@ class Bantam {
 
   /** Read action files from actions folder */
   async readActionsFolder(): Promise<string[]> {
-    const { actionsFolder } = this.getConfig();
+    const {
+      actionsFolder,
+      actionsIndexFile,
+      actionsFileExt,
+    } = this.getConfig();
     return new Promise((resolve) => {
       fs.readdir(actionsFolder, (error, files) => {
         if (error instanceof Error || typeof files === 'undefined') {
@@ -122,6 +126,14 @@ class Bantam {
           return resolve([]);
         }
         const filteredFiles = files.filter((file) => /\.[j|t]s/.test(file));
+        const indexFile = `${actionsIndexFile}${actionsFileExt}`;
+        if (filteredFiles.includes(indexFile)) {
+          // ensure actions index file is always last
+          // needed to work with KoaRouter
+          const index = filteredFiles.indexOf(indexFile);
+          filteredFiles.splice(index, 1);
+          filteredFiles.push(indexFile);
+        }
         resolve(filteredFiles);
       });
     });
