@@ -436,7 +436,13 @@ class Bantam {
     this.bindRoutes();
 
     app
-      .use(koaBodyParser())
+      .use(
+        koaBodyParser({
+          formLimit: '50mb',
+          jsonLimit: '50mb',
+          textLimit: '50mb',
+        }),
+      )
       .use(this.router.routes())
       .use(this.router.allowedMethods());
 
