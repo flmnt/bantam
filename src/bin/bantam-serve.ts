@@ -52,6 +52,9 @@ export const runServe = (devMode: boolean): void => {
       ? path.resolve(process.cwd(), './node_modules/.bin/ts-node-dev')
       : path.resolve(process.cwd(), './node_modules/.bin/ts-node');
     opts.push('--compiler-options', '{"esModuleInterop":true}');
+    if (!devMode) {
+      opts.push('--transpile-only');
+    }
   }
 
   if (engine === '') {
