@@ -311,6 +311,14 @@ The file extension for action files.
 
 `Default: "ts"`
 
+<br>
+
+**onShutdown**: `() => Promise<void>`
+
+Asynchronous function called prior to shutdown.
+
+`Default: "async () => {})"`
+
 ## Extending Bantam
 
 Bantam has been built on top of [Koa](https://github.com/koajs/koa), to expose the Koa application and extend Bantam's functionality you can do the following:

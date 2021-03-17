@@ -37,6 +37,7 @@ interface UserOptions {
   actionsFolder?: string;
   actionsIndexFile?: string;
   actionsFileExt?: string;
+  onShutdown: () => Promise<void>;
 }
 
 interface Config {
@@ -45,6 +46,7 @@ interface Config {
   actionsFolder: string;
   actionsIndexFile: string;
   actionsFileExt: string;
+  onShutdown: () => Promise<void>;
 }
 
 interface Dependencies {
@@ -81,6 +83,7 @@ class Bantam {
     actionsFolder: 'actions',
     actionsIndexFile: 'index',
     actionsFileExt: '.ts',
+    onShutdown: async () => {},
   };
 
   readonly logger: Logger;
@@ -458,7 +461,7 @@ class Bantam {
 
     const isProd = process.env.NODE_ENV === 'production';
 
-    const { port, devPort } = this.getConfig();
+    const { port, devPort, onShutdown } = this.getConfig();
     const listenPort = isProd ? port : devPort;
 
     const isError = (codeOrError: number | Error): codeOrError is Error => {
@@ -475,9 +478,17 @@ class Bantam {
         this.logger.error(codeOrError.message);
         this.logger.error(codeOrError.stack);
       }
+      this.logger.info(`Application shutting down...`);
       httpServer.close(() => {
-        this.logger.info(`Gateway shutdown...`);
-        process.exit(isError(codeOrError) ? 1 : 0);
+        onShutdown()
+          .then(() => {
+            this.logger.info(`Application shutdown complete.`);
+            process.exit(isError(codeOrError) ? 1 : 0);
+          })
+          .catch((error) => {
+            this.logger.error(error);
+            process.exit(1);
+          });
       });
     };
 
