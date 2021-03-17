@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import { Server } from 'http';
 
 import Koa, { ExtendableContext, Middleware, Next, Request } from 'koa';
 import KoaRouter from 'koa-router';
@@ -191,6 +192,10 @@ class Bantam {
       }
     }
 
+    routesToLog.push(
+      `${columnFormat('GET', 6)} -> /healthz [health check endpoint]`,
+    );
+
     this.logger.info(routesToLog.join('\n'));
   }
 
@@ -376,6 +381,11 @@ class Bantam {
             );
           }
         }
+
+        // add simple /healthz route
+        router.get('/healthz', (ctx) => {
+          ctx.body = '👋';
+        });
       } catch (error) {
         this.logger.error(
           `Unable to bind \`${action.pathName}\` action methods to route.`,
@@ -446,11 +456,42 @@ class Bantam {
       .use(this.router.routes())
       .use(this.router.allowedMethods());
 
+    const isProd = process.env.NODE_ENV === 'production';
+
     const { port, devPort } = this.getConfig();
-    const listenPort = process.env.NODE_ENV === 'production' ? port : devPort;
+    const listenPort = isProd ? port : devPort;
+
+    const isError = (codeOrError: number | Error): codeOrError is Error => {
+      return codeOrError instanceof Error;
+    };
+
+    const handleShutdown = (
+      signal: string,
+      codeOrError: number | Error,
+      httpServer: Server,
+    ): void => {
+      this.logger.info(`SIGNAL: ${signal}`);
+      if (isError(codeOrError)) {
+        this.logger.error(codeOrError.message);
+        this.logger.error(codeOrError.stack);
+      }
+      httpServer.close(() => {
+        this.logger.info(`Gateway shutdown...`);
+        process.exit(isError(codeOrError) ? 1 : 0);
+      });
+    };
+
+    const signals = ['SIGHUP', 'SIGTERM', 'SIGINT', 'uncaughtException'];
 
     try {
-      app.listen({ port: listenPort });
+      const httpServer = app.listen({ port: listenPort });
+
+      signals.forEach((signal) =>
+        process.on(signal, (codeOrError: number | Error) =>
+          handleShutdown(signal, codeOrError, httpServer),
+        ),
+      );
+
       this.logger.success(
         `Application loaded! Serving at http://localhost:${listenPort}/`,
       );

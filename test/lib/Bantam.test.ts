@@ -157,7 +157,8 @@ test('Can log routes', () => {
   expect(mockLoggerInfo).toHaveBeenCalledWith(`Available Routes:
 
 GET    -> /    -> index.js -> fetchAll
-GET    -> /:id -> index.js -> fetchSingle`);
+GET    -> /:id -> index.js -> fetchSingle
+GET    -> /healthz [health check endpoint]`);
 });
 
 test('Discover actions turns filenames into filename and path', async () => {

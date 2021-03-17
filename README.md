@@ -135,8 +135,6 @@ Your application will be served on http://localhost:3000
 
 In development mode, when you make changes to files the application will update itself.
 
-_NB: Bantam looks for a `NODE_ENV` environment variable when serving the application and defaults to `development` if no variable is set._
-
 ### Production
 
 To serve your microservice in production use:
@@ -148,8 +146,6 @@ To serve your microservice in production use:
 Your application is served at http://your-host:3000
 
 You can change the port number via the configuration options.
-
-_NB: in production you should set a `NODE_ENV=production` environment variable._
 
 ## .bantamrc.js
 
