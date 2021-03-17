@@ -37,7 +37,7 @@ interface UserOptions {
   actionsFolder?: string;
   actionsIndexFile?: string;
   actionsFileExt?: string;
-  onShutdown: () => Promise<void>;
+  onShutdown?: () => Promise<void>;
 }
 
 interface Config {

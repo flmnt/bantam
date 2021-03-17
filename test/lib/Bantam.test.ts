@@ -9,51 +9,63 @@ afterEach(() => {
 });
 
 test('Can instantiate with default options', (): void => {
-  const app = new Bantam();
-  expect(app.getConfig()).toStrictEqual({
+  const onShutdown = async (): Promise<void> => {};
+  const app = new Bantam({
+    onShutdown,
+  });
+  expect(app.getConfig()).toEqual({
     port: 3000,
     devPort: 3000,
     actionsFolder: 'actions',
     actionsIndexFile: 'index',
     actionsFileExt: '.ts',
+    onShutdown,
   });
 });
 
 test('Can instantiate with some user options', (): void => {
+  const onShutdown = async (): Promise<void> => {};
   const app = new Bantam({
     actionsFolder: 'test',
     actionsFileExt: '.js',
+    onShutdown,
   });
-  expect(app.getConfig()).toStrictEqual({
+  expect(app.getConfig()).toEqual({
     port: 3000,
     devPort: 3000,
     actionsFolder: 'test',
     actionsIndexFile: 'index',
     actionsFileExt: '.js',
+    onShutdown,
   });
 });
 
 test('Can instantiate with all user options', (): void => {
+  const onShutdown = async (): Promise<void> => {};
   const app = new Bantam({
     port: 80,
     devPort: 3001,
     actionsFolder: 'example',
     actionsIndexFile: 'other',
     actionsFileExt: '.jsx',
+    onShutdown,
   });
-  expect(app.getConfig()).toStrictEqual({
+  expect(app.getConfig()).toEqual({
     port: 80,
     devPort: 3001,
     actionsFolder: 'example',
     actionsIndexFile: 'other',
     actionsFileExt: '.jsx',
+    onShutdown,
   });
 });
 
 test('Can set config programmatically', () => {
+  const onShutdown = async (): Promise<void> => {};
   const app = new Bantam();
   const config = app.getConfig();
   config.port = 80;
+  config.onShutdown = onShutdown;
   app.setConfig(config);
   expect(app.getConfig()).toStrictEqual({
     port: 80,
@@ -61,6 +73,7 @@ test('Can set config programmatically', () => {
     actionsFolder: 'actions',
     actionsIndexFile: 'index',
     actionsFileExt: '.ts',
+    onShutdown,
   });
 });
 
