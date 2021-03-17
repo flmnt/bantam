@@ -478,11 +478,11 @@ class Bantam {
         this.logger.error(codeOrError.message);
         this.logger.error(codeOrError.stack);
       }
-      this.logger.info(`Application shutting down...`);
+      this.logger.info('Application shutting down...');
       httpServer.close(() => {
         onShutdown()
           .then(() => {
-            this.logger.info(`Application shutdown complete.`);
+            this.logger.info('Application shutdown complete.');
             process.exit(isError(codeOrError) ? 1 : 0);
           })
           .catch((error) => {
