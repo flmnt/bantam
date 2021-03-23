@@ -10,7 +10,7 @@
   "author": "Matt Davies <matt@filament.so>",
   "license": "ISC",
   "dependencies": {
-    "@flmnt/bantam": "^0.1.2",
+    "@flmnt/bantam": "^1.0.2",
     "nedb": "^1.8.0"
   },
   "devDependencies": {
