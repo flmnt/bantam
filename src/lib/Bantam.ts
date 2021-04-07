@@ -415,6 +415,13 @@ class Bantam {
     return this.router;
   }
 
+  /** Middlewear to log requests */
+  logRequests(): (ctx: BantamContext) => void {
+    return (ctx: BantamContext) => {
+      this.logger.info(ctx.request.href);
+    };
+  }
+
   extend(callback: (koaApp: Koa) => Koa): Bantam;
 
   extend(
@@ -457,7 +464,8 @@ class Bantam {
         }),
       )
       .use(this.router.routes())
-      .use(this.router.allowedMethods());
+      .use(this.router.allowedMethods())
+      .use(this.logRequests());
 
     const isProd = process.env.NODE_ENV === 'production';
 
