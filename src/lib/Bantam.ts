@@ -456,12 +456,12 @@ class Bantam {
           textLimit: '50mb',
         }),
       )
-      .use(this.router.routes())
-      .use(this.router.allowedMethods())
       .use(async (ctx, next) => {
         this.logger.info(`${ctx.request.method} ${ctx.request.url}`);
         return next();
-      });
+      })
+      .use(this.router.routes())
+      .use(this.router.allowedMethods());
 
     const isProd = process.env.NODE_ENV === 'production';
 
